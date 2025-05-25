@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
-@RestController
+@RestController("loginController")
 @AllArgsConstructor
 @RequestMapping("/user")
 public class controller {
