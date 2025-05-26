@@ -1,16 +1,36 @@
 package org.example.proyecto2backend.data;
 
 import org.example.proyecto2backend.logic.Cita;
+import org.example.proyecto2backend.logic.Medico;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Repository
 public interface CitaRepository extends JpaRepository<Cita, String> {
 
-    // Aquí puedes agregar métodos personalizados si es necesario
-    // Por ejemplo, para buscar citas por fecha, paciente, etc.
+    List<Cita> findByUsuarioId(String usuarioId);
 
-    // List<Cita> findByFecha(Date fecha);
-    // List<Cita> findByPaciente(Paciente paciente);
+    Iterable<Cita> findByStatusContainingAndMedicoUsuarioNombreContainingIgnoreCase(String status, String doctor);
+
+    Iterable<Cita> findByMedicoId(String id);
+
+    Iterable<Cita> findByStatusAndMedicoId(String status, String id);
+
+    Iterable<Cita> findByMedicoUsuarioNombreContainingIgnoreCaseAndMedicoId(String doctor, String id);
+
+    Iterable<Cita> findByStatusAndUsuarioId(String status, String id);
+
+    Iterable<Cita> findByUsuarioNombreContainingIgnoreCaseAndUsuarioId(String paciente, String id);
+
+    Iterable<Cita> findByStatus(String status);
+
+    @Query("SELECT c.hora FROM Cita c WHERE c.medico = :medico AND c.fecha = :fecha")
+    List<LocalTime> findOcupadosByMedicoAndFecha(@Param("medico") Medico medico, @Param("fecha") LocalDate fecha);
 }
