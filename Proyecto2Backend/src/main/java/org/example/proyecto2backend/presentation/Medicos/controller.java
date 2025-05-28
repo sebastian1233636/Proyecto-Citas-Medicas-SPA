@@ -48,13 +48,12 @@ public class controller {
             }
 
             Medico medico = new Medico();
-            medico.getUsuario().setNombre(dto.nombre());
+            medico.setUsuario(user);
             medico.setCosto(dto.costo());
             medico.setEspecialidad(dto.especialidad());
             medico.setFrecuenciaCitas(dto.frecuenciaCitas());
             medico.setLocalidad(dto.localidad());
             medico.setStatus("Pendiente");
-            medico.setUsuario(user);
 
             Medico guardado = medicoRepository.save(medico);
             return ResponseEntity.ok(new MedicoResponseDTO(guardado));
@@ -109,6 +108,42 @@ public class controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping("/home/filtrado")
+    public ResponseEntity<Map<String, Object>> filtrarMedicos(
+            @RequestParam(required = false) String especialidad,
+            @RequestParam(required = false) String localidad,
+            @RequestParam(value = "semana", required = false, defaultValue = "0") int semana) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            List<Medico> medicosFiltrados = service.FiltradoMedicos(especialidad, localidad);
+
+            List<MedicoDTO> medicosDTO = medicosFiltrados.stream()
+                    .map(m -> new MedicoDTO(
+                            m.getUsuario().getNombre(),
+                            m.getEspecialidad(),
+                            m.getCosto(),
+                            m.getLocalidad(),
+                            m.getFrecuenciaCitas()
+                    ))
+                    .toList();
+            Map<String, Map<LocalDate, List<String>>> disponibilidad = new HashMap<>();
+            for (Medico medico : medicosFiltrados) {
+                disponibilidad.put(medico.getId(), medico.getFechas(semana));
+            }
+
+            response.put("medicos", medicosDTO);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("error", "Error al filtrar médicos.");
+            response.put("detalles", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 
 

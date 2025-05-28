@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.example.proyecto2backend.data.UsuarioRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -44,6 +45,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(HttpMethod.GET, "/Medico/**").permitAll()
                         .requestMatchers("/user/**","/Medico/**").permitAll()
                         .requestMatchers("/personas/**").hasAnyAuthority("SCOPE_CLI","SCOPE_ADM")
                         .requestMatchers("/productos/**").hasAuthority("SCOPE_ADM")
