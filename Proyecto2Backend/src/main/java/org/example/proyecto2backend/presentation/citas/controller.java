@@ -30,6 +30,10 @@ public class controller {
     @Autowired
     service service;
 
+
+
+
+
     @GetMapping("/confirmar")
     public ResponseEntity<?> confirmar(@RequestParam("did") String doctorId,
                                        @RequestParam("ddt") String dateTime) {

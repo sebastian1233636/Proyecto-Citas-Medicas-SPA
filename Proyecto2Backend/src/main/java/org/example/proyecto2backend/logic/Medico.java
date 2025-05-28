@@ -8,6 +8,10 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 
 @Entity
 @Table(name = "medico")
@@ -43,13 +47,23 @@ public class Medico {
 
     @NotNull
     @ColumnDefault("'Pendiente'")
-    @Lob
     @Column(name = "status", nullable = false)
     private String status;
+
+    @OneToMany(mappedBy = "medico")
+    private Set<Horario> horarios = new LinkedHashSet<>();
+
+    public Set<Horario> getHorarios() {
+        return horarios;
+    }
 
     public String getId() {
         return id;
     }
+    public void setHorarios(Set<Horario> horarios) {
+        this.horarios = horarios;
+    }
+
 
     public void setId(String id) {
         this.id = id;
@@ -101,6 +115,72 @@ public class Medico {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @PrePersist
+    public void setDefaultStatus() {
+        if (this.status == null) {
+            this.status = "Pendiente";
+        }
+    }
+
+    public Map<LocalDate, List<String>> getFechas(int semanaOffset) {
+        Map<LocalDate, List<String>> disponibilidad = new TreeMap<>();
+        LocalDate fechaBase = LocalDate.now().plusWeeks(semanaOffset);
+
+        for (Horario horario : horarios) {
+            DayOfWeek diaSemana = convertirDiaSemana(horario.getDia());
+            LocalDate proximaFecha = obtenerProximaFecha(fechaBase, diaSemana);
+            List<String> horariosGenerados = generarHorarios(horario);
+            disponibilidad.put(proximaFecha, horariosGenerados);
+        }
+        return disponibilidad;
+    }
+
+
+    public Map<LocalDate, List<String>> nextWeek() {
+        Map<LocalDate, List<String>> disponibilidad = new TreeMap<>();
+        LocalDate fechaActual = LocalDate.now().plusWeeks(1);
+
+        for (Horario horario : horarios) {
+            DayOfWeek diaSemana = convertirDiaSemana(horario.getDia());
+            LocalDate proximaFecha = obtenerProximaFecha(fechaActual, diaSemana);
+
+            List<String> horariosGenerados = generarHorarios(horario);
+            disponibilidad.put(proximaFecha, horariosGenerados);
+        }
+        return disponibilidad;
+    }
+
+    private DayOfWeek convertirDiaSemana(String dia) {
+        return switch (dia.toLowerCase()) {
+            case "lunes" -> DayOfWeek.MONDAY;
+            case "martes" -> DayOfWeek.TUESDAY;
+            case "miércoles" -> DayOfWeek.WEDNESDAY;
+            case "jueves" -> DayOfWeek.THURSDAY;
+            case "viernes" -> DayOfWeek.FRIDAY;
+            case "sábado" -> DayOfWeek.SATURDAY;
+            case "domingo" -> DayOfWeek.SUNDAY;
+            default -> throw new IllegalArgumentException("Día inválido: " + dia);
+        };
+    }
+
+    private LocalDate obtenerProximaFecha(LocalDate desde, DayOfWeek diaSemana) {
+        int diasParaSumar = (diaSemana.getValue() - desde.getDayOfWeek().getValue() + 7) % 7;
+        return desde.plusDays(diasParaSumar == 0 ? 7 : diasParaSumar);
+    }
+
+    private List<String> generarHorarios(Horario horario) {
+        List<String> horariosGenerados = new ArrayList<>();
+        LocalTime inicio = horario.getHoraInicio();
+        LocalTime fin = horario.getHoraFin();
+        int frecuencia = this.frecuenciaCitas;
+
+        while (inicio.isBefore(fin)) {
+            horariosGenerados.add(inicio.toString());
+            inicio = inicio.plusMinutes(frecuencia);
+        }
+        return horariosGenerados;
     }
 
 }

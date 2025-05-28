@@ -8,10 +8,16 @@ import org.example.proyecto2backend.logic.DTOs.MedicoDTO;
 import org.example.proyecto2backend.logic.DTOs.MedicoResponseDTO;
 import org.example.proyecto2backend.logic.Medico;
 import org.example.proyecto2backend.logic.Usuario;
+import org.example.proyecto2backend.logic.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController("medicosController")
 @AllArgsConstructor
@@ -21,6 +27,8 @@ public class controller {
     private final UsuarioRepository usuarioRepository;
     @Autowired
     MedicoRepository medicoRepository;
+    @Autowired
+    service service;
 
 
     @PostMapping("/register/{id}")
@@ -40,6 +48,7 @@ public class controller {
             }
 
             Medico medico = new Medico();
+            medico.getUsuario().setNombre(dto.nombre());
             medico.setCosto(dto.costo());
             medico.setEspecialidad(dto.especialidad());
             medico.setFrecuenciaCitas(dto.frecuenciaCitas());
@@ -54,6 +63,55 @@ public class controller {
                     .body("Error al registrar el médico: " + e.getMessage());
         }
     }
+
+
+    @GetMapping("/home")
+    public ResponseEntity<Map<String, Object>> home(
+            @RequestParam(value = "semana", required = false, defaultValue = "0") int semana,
+            @RequestParam(value = "error", required = false) String error) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Map<String, Map<LocalDate, List<String>>> disponibilidad = new HashMap<>();
+
+            List<Medico> medicos = (List<Medico>) service.medicoFindAll();
+
+            for (Medico medico : medicos) {
+                Map<LocalDate, List<String>> fechas = medico.getFechas(semana);
+                disponibilidad.put(medico.getId(), fechas);
+            }
+
+            // Convertir a DTO incluyendo el nombre
+            List<MedicoDTO> medicosDTO = medicos.stream()
+                    .map(m -> new MedicoDTO(
+                            m.getUsuario().getNombre(),
+                            m.getEspecialidad(),
+                            m.getCosto(),
+                            m.getLocalidad(),
+                            m.getFrecuenciaCitas()
+                    ))
+                    .toList();
+
+            response.put("medicos", medicosDTO);
+            response.put("disponibilidad", disponibilidad);
+            response.put("semana", semana);
+
+            if (error != null) {
+                response.put("error", "El horario seleccionado ya está ocupado. Por favor, elige otro.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("error", "Ocurrió un error al procesar la solicitud.");
+            response.put("detalles", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
+
 
 
 }
