@@ -84,6 +84,7 @@ public class controller {
             // Convertir a DTO incluyendo el nombre
             List<MedicoDTO> medicosDTO = medicos.stream()
                     .map(m -> new MedicoDTO(
+                            m.getId(),
                             m.getUsuario().getNombre(),
                             m.getEspecialidad(),
                             m.getCosto(),
@@ -122,6 +123,7 @@ public class controller {
 
             List<MedicoDTO> medicosDTO = medicosFiltrados.stream()
                     .map(m -> new MedicoDTO(
+                            m.getId(),
                             m.getUsuario().getNombre(),
                             m.getEspecialidad(),
                             m.getCosto(),
@@ -135,6 +137,8 @@ public class controller {
             }
 
             response.put("medicos", medicosDTO);
+            response.put("disponibilidad", disponibilidad);
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

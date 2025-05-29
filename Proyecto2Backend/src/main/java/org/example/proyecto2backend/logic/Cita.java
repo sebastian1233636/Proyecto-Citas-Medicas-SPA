@@ -39,7 +39,6 @@ public class Cita {
 
     @NotNull
     @ColumnDefault("'Pendiente'")
-    @Lob
     @Column(name = "status", nullable = false)
     private String status;
 

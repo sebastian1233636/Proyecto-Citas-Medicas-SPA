@@ -31,6 +31,7 @@ public class TokenService {
         var user = (Usuario) authentication.getPrincipal();
         builder.claim("id", user.getId());
         builder.claim("name", user.getNombre());
+        builder.claim("rol", user.getRol().getId());
         var claims = builder.build();
         var key = jwtConfig.getSecretKey();
         var jwt = new SignedJWT(header, claims);

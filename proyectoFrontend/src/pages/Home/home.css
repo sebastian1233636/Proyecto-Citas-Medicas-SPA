@@ -1,0 +1,139 @@
+.appointment-table {
+    position: relative;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+.appointment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-left: 24px;
+}
+
+.appointment-table td {
+    width: auto;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.button-container {
+    margin-left: -30px;
+}
+
+
+.button-container button {
+    background: #e0ecff;
+    color: #007aff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    top: 50%;
+
+}
+
+.appointment-table button {
+    background: #007aff;
+    color: white;
+}
+
+.appointment-table .availability {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(-50%);
+    height: 100%;
+    left: 100px;
+}
+
+.appointment-table .availability .button-container {
+    position: absolute;
+    left: 127%;
+    justify-content: flex-end;
+}
+
+.doctor-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 5px;
+}
+
+.doctor-info img {
+    width: 80px;
+    height: 90px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.price {
+    color: blue;
+    font-weight: bold;
+}
+
+.hospital {
+    font-size: 14px;
+    color: gray;
+}
+
+.availability {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.dates-times-container {
+    display: flex;
+    gap: 20px;
+}
+
+.date-container {
+    text-align: center;
+}
+
+.date {
+    font-size: 14px;
+    font-weight: bold;
+    color: orange;
+    margin-bottom: 5px;
+}
+
+.times a {
+    display: block;
+    text-decoration: none;
+}
+
+.times a button {
+    display: block;
+    width: 100%;
+    background: rgba(0, 122, 255, 0.1);
+    color: #007aff;
+    padding: 5px 10px;
+    border-radius: 12px;
+    margin: 2px 0;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.times a button:hover {
+    background: #007aff;
+    color: white;
+    transition: 0.3s;
+}

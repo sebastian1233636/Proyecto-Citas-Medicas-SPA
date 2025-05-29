@@ -2,6 +2,7 @@ import './App.css';
 import About from './pages/About/about';
 import Login from './pages/Login/login';
 import Logout from './pages/Login/logout';
+import Home from './pages/Home/home';
 import { useContext } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
@@ -75,6 +76,7 @@ function Main() {
                 <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
+                <Route path="/home" element={<Home />} />
             </Routes>
         </div>
     );
