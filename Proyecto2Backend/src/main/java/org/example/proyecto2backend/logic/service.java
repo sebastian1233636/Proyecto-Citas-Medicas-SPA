@@ -203,4 +203,36 @@ public class service {
 
         return citaRepository.findByMedicoId(idDoctor);
     }
+
+    public void aceptarCita(String citaId) {
+        Cita cita = citaRepository.findById(citaId)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        cita.setStatus("Aceptada");
+        citaRepository.save(cita);
+    }
+
+    public void cancelarCita(String citaId) {
+        Cita cita = citaRepository.findById(citaId)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        cita.setStatus("Cancelada");
+        citaRepository.save(cita);
+    }
+
+    public String obtenerNotasCita(String citaId) {
+        Cita cita = citaRepository.findById(citaId)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        return cita.getNotas(); // Suponiendo que existe un campo "notas"
+    }
+
+
+    // Devuelve todas las citas del usuario
+    public List<Cita> obtenerCitasUsuario(String usuarioId) {
+        return citaRepository.findByUsuarioId(usuarioId);
+    }
+
+    // Filtra las citas del usuario por estado y/o nombre del médico
+    public List<Cita> filtrarCitasUsuario(String usuarioId, String estado, String medicoNombre) {
+            return citaRepository.findByUsuarioIdAndStatusContainingIgnoreCaseAndMedicoUsuarioNombreContainingIgnoreCaseOrderByFechaDescHoraDesc(
+                    usuarioId, estado, medicoNombre);
+    }
 }

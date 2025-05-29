@@ -33,4 +33,9 @@ public interface CitaRepository extends JpaRepository<Cita, String> {
 
     @Query("SELECT c.hora FROM Cita c WHERE c.medico = :medico AND c.fecha = :fecha")
     List<LocalTime> findOcupadosByMedicoAndFecha(@Param("medico") Medico medico, @Param("fecha") LocalDate fecha);
+
+    List<Cita> findByUsuarioIdAndStatusContainingIgnoreCaseAndMedicoUsuarioNombreContainingIgnoreCaseOrderByFechaDescHoraDesc(
+            String usuarioId, String status, String medicoNombre);
+
+
 }
