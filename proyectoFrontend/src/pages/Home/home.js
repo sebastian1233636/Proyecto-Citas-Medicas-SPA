@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from '../../AppProvider';
 import { useNavigate } from "react-router-dom";
+import './home.css';
 
 function Home() {
     const backend = "http://localhost:8080";
@@ -73,15 +74,13 @@ function Home() {
                 placeholder="Filtrar por especialidad"
                 value={especialidad}
                 onChange={handleEspecialidadChange}
-                style={{ margin: "0.5rem 0", padding: "0.5rem", width: "48%", marginRight: "4%" }}
-            />
+                className="search-bar"            />
             <input
                 type="text"
                 placeholder="Filtrar por localidad"
                 value={localidad}
                 onChange={handleLocalidadChange}
-                style={{ margin: "0.5rem 0", padding: "0.5rem", width: "48%" }}
-            />
+                className="search-bar"            />
 
             <table className="appointment-table">
                 <tbody>
