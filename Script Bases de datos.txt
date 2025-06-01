@@ -1,0 +1,75 @@
+CREATE DATABASE Scm;
+USE Scm;
+
+CREATE TABLE Rol (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nombre VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE Usuario (
+id VARCHAR(100) PRIMARY KEY,
+clave VARCHAR(255) NOT NULL,
+rol_id INT NOT NULL,
+nombre VARCHAR(100) NOT NULL,
+imagen BLOB,
+FOREIGN KEY (rol_id) REFERENCES Rol(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE Medico (
+id VARCHAR(100) PRIMARY KEY,
+especialidad VARCHAR(100) NOT NULL,
+costo DECIMAL(10,2) NOT NULL,
+localidad VARCHAR(100) NOT NULL,
+frecuencia_citas INT NOT NULL,
+status ENUM('Pendiente', 'Aprobado') NOT NULL DEFAULT 'Pendiente',
+FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Horario (
+id INT AUTO_INCREMENT PRIMARY KEY,
+medico_id VARCHAR(100) NOT NULL,
+dia ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo') NOT NULL,
+hora_inicio TIME NOT NULL,
+hora_fin TIME NOT NULL,
+FOREIGN KEY (medico_id) REFERENCES Medico(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Cita (
+id INT AUTO_INCREMENT PRIMARY KEY,
+medico_id VARCHAR(100) NOT NULL,
+usuario_id VARCHAR(100) NOT NULL,
+fecha DATE NOT NULL,
+hora TIME NOT NULL,
+status ENUM('Pendiente', 'Cancelada', 'Completada') NOT NULL DEFAULT 'Pendiente',
+notas TEXT,
+FOREIGN KEY (medico_id) REFERENCES Medico(id) ON DELETE CASCADE,
+FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Administrador (
+    id VARCHAR(100) PRIMARY KEY,  
+    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
+);
+
+INSERT INTO Rol (nombre) VALUES ('Paciente'), ('Medico'), ('Administrador');
+
+INSERT INTO Usuario (id, clave, rol_id, nombre) VALUES
+('JSAN', '$2a$12$pFZIKs02MrcExk48J3Hd2OaM31QyHB.fjThQ4nRF/UFuNx2Zj2LR.', 3, 'Jose Sanchez'), -- Administrador
+('MPER', '$2a$12$pFZIKs02MrcExk48J3Hd2OaM31QyHB.fjThQ4nRF/UFuNx2Zj2LR.', 2, 'Maria Perez'),    -- Médico
+('RLOR', '$2a$12$pFZIKs02MrcExk48J3Hd2OaM31QyHB.fjThQ4nRF/UFuNx2Zj2LR.', 2, 'Roberto Loría'),  -- Médico
+('JLOP', '$2a$12$pFZIKs02MrcExk48J3Hd2OaM31QyHB.fjThQ4nRF/UFuNx2Zj2LR.', 1, 'Julio López'),     -- Paciente
+('ACAS', '$2a$12$pFZIKs02MrcExk48J3Hd2OaM31QyHB.fjThQ4nRF/UFuNx2Zj2LR.', 1, 'Ana Castillo');     -- Paciente
+
+INSERT INTO Administrador (id) VALUES ('JSAN');
+
+INSERT INTO Medico (id, especialidad, costo, localidad, frecuencia_citas, status) VALUES
+('MPER', 'Pediatría', 25000.00, 'San José', 3, 'Aprobado'),
+('RLOR', 'Dermatología', 35000.00, 'Heredia', 2, 'Aprobado');
+
+INSERT INTO Horario (medico_id, dia, hora_inicio, hora_fin) VALUES
+('MPER', 'Lunes', '09:00:00', '12:00:00'),
+('MPER', 'Miércoles', '14:00:00', '17:00:00');
+
+INSERT INTO Horario (medico_id, dia, hora_inicio, hora_fin) VALUES
+('RLOR', 'Martes', '10:00:00', '13:00:00'),
+('RLOR', 'Jueves', '15:00:00', '18:00:00');
