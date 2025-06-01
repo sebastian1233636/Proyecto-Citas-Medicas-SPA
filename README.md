@@ -33,7 +33,6 @@ El sistema está basado en una arquitectura cliente-servidor desacoplada:
 - Control de acceso basado en **roles** mediante JWT.
 - Navegación fluida entre login y registro.
 
----
 
 ### Gestión de Médicos
 
@@ -41,7 +40,6 @@ El sistema está basado en una arquitectura cliente-servidor desacoplada:
 2. **Perfil:** Configuración de especialidad, localidad, horarios, frecuencia de atención, costo, foto y presentación.
 3. **Gestión de citas:** Listado de citas, filtros por estado o paciente, orden cronológico, posibilidad de **completar citas** con anotaciones.
 
----
 
 ### Gestión de Pacientes
 
@@ -52,14 +50,12 @@ El sistema está basado en una arquitectura cliente-servidor desacoplada:
 5. **Historial de citas:** Listado de citas anteriores con filtros por médico o estado.
 6. **Registro de pacientes:** Formulario con ID, nombre y doble ingreso de clave.
 
----
 
 ### Gestión del Administrador
 
 1. **Login de administrador:** Autenticación por ID y clave. El rol determina el acceso.
 2. **Aprobación de médicos:** Listado de médicos registrados y opción de aprobar nuevos registros.
 
----
 
 ## Seguridad
 
@@ -68,7 +64,6 @@ El sistema está basado en una arquitectura cliente-servidor desacoplada:
 - **Persistencia de sesión:** tokens almacenados de forma segura (e.g., `localStorage`).
 - **Validación:** cada petición protegida al backend valida el token JWT.
 
----
 
 ## Comunicación Cliente-Servidor
 
