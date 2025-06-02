@@ -31,7 +31,7 @@ function Header() {
     return (
         <header className="App-header">
             <div className="App-header-title">
-                <img src="./images/logo.jpg" alt="logo" className="App-logo" />
+                <img src="/logo.jpg" alt="logo" className="App-logo" />
                 <p>Medical Appointments</p>
             </div>
             <nav className="App-nav">
@@ -85,7 +85,13 @@ function Main() {
 function Footer() {
     return (
         <div className="App-footer">
-            ©2025 Sistema de Citas Médicas - Total Soft Inc.
+            <div>Total Soft Inc.</div>
+            <div className="social-icons">
+                <img src="/twitter.png" alt="Twitter"/>
+                <img src="/facebook.png" alt="Facebook"/>
+                <img src="/instagram.png" alt="Instagram"/>
+            </div>
+            <div>©2019 Tsf, Inc.</div>
         </div>
     );
 }

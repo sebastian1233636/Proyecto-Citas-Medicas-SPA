@@ -40,7 +40,7 @@ export default function Login() {
         <div className="login-container">
             <form onSubmit={handleSubmit} className="login-box">
                 <h2>Login</h2>
-                <img src="/images/user.png" alt="User Icon" />
+                <img src="/user.png" alt="User Icon" />
 
                 <div className="input-group">
                     <i className="fas fa-user"></i>
