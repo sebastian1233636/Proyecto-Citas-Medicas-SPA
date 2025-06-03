@@ -15,18 +15,15 @@ function Home() {
     const { user } = useContext(AppContext);
     const navigate = useNavigate();
 
-    // Llamada inicial sin filtros
     useEffect(() => {
         fetchMedicos();
     }, []);
 
-    // Fetch con parámetros en orden: especialidad, localidad
     const fetchMedicos = async (esp = "", loc = "") => {
         try {
             const token = localStorage.getItem("token");
             let url = `${backend}/Medico/home`;
 
-            // Solo agregamos query si hay algo escrito
             if (esp || loc) {
                 const params = new URLSearchParams();
                 if (esp) params.append("especialidad", esp);
@@ -34,12 +31,19 @@ function Home() {
                 url = `${backend}/Medico/home/filtrado?${params.toString()}`;
             }
 
+            // Construimos headers dinámicamente
+            const headers = {
+                "Content-Type": "application/json",
+            };
+
+            // Solo si hay token, lo agregamos
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+
             const response = await fetch(url, {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
+                headers: headers
             });
 
             if (response.ok) {
@@ -54,7 +58,6 @@ function Home() {
         }
     };
 
-    // Handler para cada filtro
     const handleEspecialidadChange = (e) => {
         const nuevoValor = e.target.value;
         setEspecialidad(nuevoValor);
@@ -68,19 +71,36 @@ function Home() {
     };
 
     return (
-        <div>
-            <input
-                type="text"
-                placeholder="Filtrar por especialidad"
-                value={especialidad}
-                onChange={handleEspecialidadChange}
-                className="search-bar"            />
-            <input
-                type="text"
-                placeholder="Filtrar por localidad"
-                value={localidad}
-                onChange={handleLocalidadChange}
-                className="search-bar"            />
+        <>
+            <div className="search-bar">
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <div className="input-container">
+                        <div className="input-group">
+                            <span className="input-label">Speciality</span>
+                            <input
+                                type="text"
+                                id="especialidad"
+                                name="especialidad"
+                                value={especialidad}
+                                onChange={handleEspecialidadChange}
+                            />
+                        </div>
+                        <div className="input-group">
+                            <span className="input-label">City</span>
+                            <input
+                                type="text"
+                                id="localidad"
+                                name="localidad"
+                                value={localidad}
+                                onChange={handleLocalidadChange}
+                            />
+                        </div>
+                        <button type="button" onClick={() => fetchMedicos(especialidad, localidad)}>
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
 
             <table className="appointment-table">
                 <tbody>
@@ -128,8 +148,9 @@ function Home() {
                 ))}
                 </tbody>
             </table>
-        </div>
+        </>
     );
 }
+
 
 export default Home;
