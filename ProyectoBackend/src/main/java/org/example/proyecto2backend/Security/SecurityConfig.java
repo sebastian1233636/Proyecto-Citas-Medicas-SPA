@@ -38,16 +38,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration configuration = new CorsConfiguration();
                     configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS"));
+                    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                    configuration.setAllowCredentials(true); // <- esto a veces es necesario
                     return configuration;
                 }))
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(HttpMethod.GET, "/Medico/**").permitAll()
-                        .requestMatchers("/user/**","/Medico/**").permitAll()
-                        .requestMatchers("/personas/**").hasAnyAuthority("SCOPE_CLI","SCOPE_ADM")
+                        .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/Medico/register/**").permitAll()
+                        .requestMatchers("/user/**", "/Medico/**").permitAll()
+                        .requestMatchers("/personas/**").hasAnyAuthority("SCOPE_CLI", "SCOPE_ADM")
                         .requestMatchers("/productos/**").hasAuthority("SCOPE_ADM")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(configurer -> configurer.jwt(Customizer.withDefaults()))

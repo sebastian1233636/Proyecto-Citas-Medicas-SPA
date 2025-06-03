@@ -3,6 +3,8 @@ import About from './pages/About/about';
 import Login from './pages/Login/login';
 import Logout from './pages/Login/logout';
 import Home from './pages/Home/home';
+import Registro from './pages/Registro/registro';
+import RegistroMedico from './pages/Registro/registroMedico';
 import { useContext } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
@@ -74,6 +76,8 @@ function Main() {
         <div className="App-Main">
             <Routes>
                 <Route path="/about" element={<About />} />
+                <Route path="/registro" element={<Registro />} />
+                <Route path="/registro-medico/:id" element={<RegistroMedico />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/home" element={<Home />} />

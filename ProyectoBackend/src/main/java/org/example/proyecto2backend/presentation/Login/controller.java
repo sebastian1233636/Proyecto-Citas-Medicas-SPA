@@ -38,17 +38,32 @@ public class controller {
     @Autowired
     private final RolRepository rolRepository;
 
-
-
     @PostMapping("/register")
-    public Usuario register(@RequestBody RegistroDTO dto) {
-        Rol rol = rolRepository.findById(String.valueOf(dto.rolId())).orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-        Usuario usuario = new Usuario();
-        usuario.setId(dto.id());
-        usuario.setRol(rol);
-        usuario.setNombre(dto.nombre());
-        usuario.setClave(passwordEncoder.encode(dto.clave()));
-        return usuarioRepository.save(usuario);
+    public ResponseEntity<?> register(@RequestBody RegistroDTO dto) {
+        try {
+            if (usuarioRepository.existsById(dto.id())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("El usuario ya está registrado.");
+            }
+
+            Rol rol = rolRepository.findById(String.valueOf(dto.rolId()))
+                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+            Usuario usuario = new Usuario();
+            usuario.setId(dto.id());
+            usuario.setRol(rol);
+            usuario.setNombre(dto.nombre());
+            usuario.setClave(passwordEncoder.encode(dto.clave()));
+
+            Usuario guardado = usuarioRepository.save(usuario);
+            return ResponseEntity.ok(guardado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error de datos: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al registrar el usuario: " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")
