@@ -29,26 +29,19 @@ export default function Registro() {
         setError("");
 
         try {
-            let response;
+            const dataToSend = new FormData();
+            for (let key in formData) {
+                dataToSend.append(key, formData[key]);
+            }
 
-            if (formData.imagen) {
-                // Si hay imagen, usar FormData
-                const dataToSend = new FormData();
-                for (let key in formData) {
-                    dataToSend.append(key, formData[key]);
-                }
+            const response = await fetch(`${backend}/user/register`, {
+                method: "POST",
+                body: dataToSend,
+            });
 
-                response = await fetch(`${backend}/user/register`, {
-                    method: "POST",
-                    body: dataToSend
-                });
-            } else {
-                const { id, clave, nombre, rolId } = formData;
-                response = await fetch(`${backend}/user/register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id, clave, nombre, rolId })
-                });
+            if (response.redirected) {
+                window.location.href = response.url; // Manejo de redirect desde Spring
+                return;
             }
 
             if (response.ok) {

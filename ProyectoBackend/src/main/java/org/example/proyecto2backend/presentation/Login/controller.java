@@ -18,11 +18,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 @RestController("loginController")
@@ -39,24 +40,45 @@ public class controller {
     private final RolRepository rolRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegistroDTO dto) {
+    public ResponseEntity<?> register(
+            @RequestParam("id") String id,
+            @RequestParam("clave") String clave,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("rolId") String rolId,
+            @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
+
         try {
-            if (usuarioRepository.existsById(dto.id())) {
+            if (usuarioRepository.existsById(id)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("El usuario ya está registrado.");
             }
 
-            Rol rol = rolRepository.findById(String.valueOf(dto.rolId()))
+            Rol rol = rolRepository.findById(rolId)
                     .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
             Usuario usuario = new Usuario();
-            usuario.setId(dto.id());
+            usuario.setId(id);
             usuario.setRol(rol);
-            usuario.setNombre(dto.nombre());
-            usuario.setClave(passwordEncoder.encode(dto.clave()));
+            usuario.setNombre(nombre);
+            usuario.setClave(passwordEncoder.encode(clave));
 
             Usuario guardado = usuarioRepository.save(usuario);
+
+            if (imagen != null && !imagen.isEmpty()) {
+                String nombreArchivo = id + ".jpg";
+                String documentosDir = System.getProperty("user.home") + "/Documents/Usuarios/";
+
+                Path directorioDestino = Paths.get(documentosDir);
+                if (!Files.exists(directorioDestino)) {
+                    Files.createDirectories(directorioDestino);
+                }
+
+                Path rutaArchivo = directorioDestino.resolve(nombreArchivo);
+                imagen.transferTo(rutaArchivo.toFile());
+            }
+
             return ResponseEntity.ok(guardado);
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error de datos: " + e.getMessage());
@@ -65,6 +87,7 @@ public class controller {
                     .body("Error al registrar el usuario: " + e.getMessage());
         }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
