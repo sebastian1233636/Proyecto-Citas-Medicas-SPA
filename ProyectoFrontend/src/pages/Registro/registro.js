@@ -40,7 +40,7 @@ export default function Registro() {
             });
 
             if (response.redirected) {
-                window.location.href = response.url; // Manejo de redirect desde Spring
+                window.location.href = response.url;
                 return;
             }
 
