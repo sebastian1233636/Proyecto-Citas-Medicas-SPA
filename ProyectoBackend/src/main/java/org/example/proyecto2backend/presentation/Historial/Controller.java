@@ -14,14 +14,14 @@ import java.util.List;
 
 @RestController("historialController")
 @AllArgsConstructor
-@RequestMapping("/Historial")
+@RequestMapping("/historialPaciente")
 public class Controller {
 
     private final UsuarioRepository usuarioRepository;
     private final CitaRepository citaRepository;
 
     //  Obtener historial de citas (con o sin filtros), ordenado por fecha y hora
-    @GetMapping
+    @GetMapping("/inicio")
     public ResponseEntity<List<CitaResponseDTO>> historialCitas(
             @AuthenticationPrincipal Usuario usuario,
             @RequestParam(required = false, defaultValue = "") String status,

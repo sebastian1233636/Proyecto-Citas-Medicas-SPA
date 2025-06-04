@@ -5,6 +5,7 @@ import Logout from './pages/Login/logout';
 import Home from './pages/Home/home';
 import Registro from './pages/Registro/registro';
 import RegistroMedico from './pages/Registro/registroMedico';
+import HistorialPaciente from "./pages/Citas/historialCitas";
 import { useContext } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
@@ -81,6 +82,7 @@ function Main() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/historialPaciente" element={<HistorialPaciente />} />
             </Routes>
         </div>
     );
