@@ -8,6 +8,12 @@ function Home() {
     const [medicos, setMedicos] = useState([]);
     const [disponibilidad, setDisponibilidad] = useState({});
 
+    const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedTime, setSelectedTime] = useState("");
+    const [showModal, setShowModal] = useState(false);
+
+
     // Los dos filtros separados
     const [especialidad, setEspecialidad] = useState("");
     const [localidad, setLocalidad] = useState("");
@@ -18,6 +24,43 @@ function Home() {
     useEffect(() => {
         fetchMedicos();
     }, []);
+
+
+
+    const handleTimeClick = (doctor, date, time) => {
+        setSelectedDoctor(doctor);
+        setSelectedDate(date);
+        setSelectedTime(time);
+        setShowModal(true);
+    };
+
+    const handleConfirm = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const doctorId = selectedDoctor.id;
+            const dateTime = `${selectedDate}T${selectedTime}`;
+
+            const response = await fetch(`${backend}/citas/appointment/confirm?did=${doctorId}&ddt=${dateTime}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                alert("¡Cita confirmada con éxito!");
+                setShowModal(false);
+            } else {
+                alert("Error al confirmar la cita");
+            }
+        } catch (err) {
+            console.error("Error al confirmar la cita:", err);
+            alert("Ocurrió un error al confirmar la cita");
+        }
+    };
+
+
 
     const fetchMedicos = async (esp = "", loc = "") => {
         try {
@@ -129,7 +172,10 @@ function Home() {
                                             </div>
                                             <div className="times">
                                                 {horas.map((hora, j) => (
-                                                    <button key={j}>{hora}</button>
+                                                    <button key={j} onClick={() => handleTimeClick(medico, fecha, hora)}>
+                                                        {hora}
+                                                    </button>
+
                                                 ))}
                                             </div>
                                         </div>
@@ -148,6 +194,37 @@ function Home() {
                 ))}
                 </tbody>
             </table>
+
+
+
+            {showModal && selectedDoctor && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Confirm Appointment</h2>
+                        <p><strong>Doctor:</strong> {selectedDoctor.nombre}</p>
+                        <p><strong>Specialty:</strong> {selectedDoctor.especialidad}</p>
+                        <p><strong>City:</strong> {selectedDoctor.localidad}</p>
+                        <p><strong>Date:</strong> {new Date(selectedDate).toLocaleDateString("es-ES")}</p>
+                        <p><strong>Time:</strong> {selectedTime}</p>
+                        <div className="modal-buttons">
+                            <button
+                                className="btn btn-success"
+                                onClick={handleConfirm}
+                            >
+                                Confirm
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setShowModal(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
         </>
     );
 }

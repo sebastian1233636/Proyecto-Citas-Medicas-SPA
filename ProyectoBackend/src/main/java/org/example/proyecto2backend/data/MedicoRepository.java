@@ -17,4 +17,5 @@ public interface MedicoRepository extends JpaRepository<Medico, String> {
 
     Medico findByUsuarioNombreContainingIgnoreCase(String doctor);
 
+    List<Medico> findByStatus(String pendiente);
 }

@@ -1,5 +1,6 @@
 package org.example.proyecto2backend.presentation.citas;
 
+import com.nimbusds.jwt.JWT;
 import lombok.AllArgsConstructor;
 import org.example.proyecto2backend.logic.Cita;
 import org.example.proyecto2backend.logic.DTOs.CitaRequestDTO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -30,57 +32,41 @@ public class controller {
     @Autowired
     service service;
 
-
-
-
-
-    @GetMapping("/confirmar")
-    public ResponseEntity<?> confirmar(@RequestParam("did") String doctorId,
-                                       @RequestParam("ddt") String dateTime) {
-        Medico medico = service.obtenerMedicoPorId(doctorId);
-
-        if (medico == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Médico no encontrado"));
-        }
-
-        String[] dateTimeParts = dateTime.split("T");
-        String fecha;
-        String hora;
-
-        if (dateTimeParts.length == 2) {
-            fecha = dateTimeParts[0];
-            hora = dateTimeParts[1];
-        } else {
-            fecha = "Fecha no válida";
-            hora = "Hora no válida";
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("medico", medico);
-        response.put("fecha", fecha);
-        response.put("hora", hora);
-
-        return ResponseEntity.ok(response);
-    }
-
-
     @PostMapping("/appointment/confirm")
-    public ResponseEntity<?> agendarCita(@RequestBody CitaRequestDTO request,
-                                         @AuthenticationPrincipal(expression = "usuario") Usuario usuario) {
+    public ResponseEntity<?> agendarCita(@RequestParam("did") String medicoId,
+                                         @RequestParam("ddt") String fechaHora,
+                                         @AuthenticationPrincipal Jwt jwt) {
         try {
-            Medico medico = service.obtenerMedicoPorId(request.medicoId());
+            // Obtener médico
+            Medico medico = service.obtenerMedicoPorId(medicoId);
             if (medico == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Médico no encontrado"));
             }
 
-            DateTimeFormatter formatterFecha = DateTimeFormatter.ofPattern("d/M/yy");
+            // Obtener usuario desde JWT
+            String usuarioId = jwt.getClaimAsString("id");
+            Usuario usuario = service.findUsuarioById(usuarioId); // método que recupera desde DB
+
+            if (usuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Usuario no válido"));
+            }
+
+            // Separar fecha y hora
+            String[] partes = fechaHora.split("T");
+            if (partes.length != 2) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Formato de fecha y hora inválido"));
+            }
+
+            DateTimeFormatter formatterFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fecha = LocalDate.parse(partes[0], formatterFecha);
+
             DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime hora = LocalTime.parse(partes[1], formatterHora);
 
-            LocalDate fecha = LocalDate.parse(request.fecha(), formatterFecha);
-            LocalTime hora = LocalTime.parse(request.hora(), formatterHora);
-
+            // Crear y guardar cita
             Cita cita = new Cita();
             cita.setMedico(medico);
             cita.setUsuario(usuario);
@@ -94,26 +80,10 @@ public class controller {
                     .body(Map.of("mensaje", "Cita agendada exitosamente"));
         } catch (DateTimeParseException e) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Formato de fecha u hora inválido", "detalle", e.getMessage()));
+                    .body(Map.of("error", "Error al parsear fecha u hora", "detalle", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al agendar la cita", "detalle", e.getMessage()));
-        }
-    }
-
-
-    @PostMapping("/book")
-    public ResponseEntity<?> redirigirReserva(@RequestBody ReservaRequestDTO request) {
-        try {
-            String encodedDoctorId = URLEncoder.encode(request.doctorId(), StandardCharsets.UTF_8);
-            String encodedDateTime = URLEncoder.encode(request.dateTime(), StandardCharsets.UTF_8);
-
-            String redirectionUrl = "/confirmar?did=" + encodedDoctorId + "&ddt=" + encodedDateTime;
-
-            return ResponseEntity.ok(Map.of("redirectUrl", redirectionUrl));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "No se pudo generar la URL de redirección", "detalle", e.getMessage()));
+                    .body(Map.of("error", "Error interno", "detalle", e.getMessage()));
         }
     }
 

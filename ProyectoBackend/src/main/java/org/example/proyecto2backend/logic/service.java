@@ -235,4 +235,11 @@ public class service {
             return citaRepository.findByUsuarioIdAndStatusContainingIgnoreCaseAndMedicoUsuarioNombreContainingIgnoreCaseOrderByFechaDescHoraDesc(
                     usuarioId, estado, medicoNombre);
     }
+
+
+    public List<Medico> ObtenerMedicosPendientes() {
+        return medicoRepository.findByStatus("Pendiente");
+    }
+
+
 }

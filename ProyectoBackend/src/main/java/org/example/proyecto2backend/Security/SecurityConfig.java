@@ -48,10 +48,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/Medico/register/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuario/imagen/**").permitAll()
                         .requestMatchers("/user/**", "/Medico/**").permitAll()
                         .requestMatchers("/personas/**").hasAnyAuthority("SCOPE_CLI", "SCOPE_ADM")
                         .requestMatchers("/productos/**").hasAuthority("SCOPE_ADM")
                         .anyRequest().authenticated())
+
                 .oauth2ResourceServer(configurer -> configurer.jwt(Customizer.withDefaults()))
                 .build();
     }

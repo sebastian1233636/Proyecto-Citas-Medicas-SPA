@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.example.proyecto2backend.data.MedicoRepository;
 import org.example.proyecto2backend.data.UsuarioRepository;
 import org.example.proyecto2backend.logic.DTOs.MedicoDTO;
+import org.example.proyecto2backend.logic.DTOs.MedicoDTOGestion;
 import org.example.proyecto2backend.logic.DTOs.MedicoResponseDTO;
 import org.example.proyecto2backend.logic.Medico;
 import org.example.proyecto2backend.logic.Usuario;
@@ -145,6 +146,58 @@ public class controller {
             response.put("error", "Error al filtrar médicos.");
             response.put("detalles", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
+
+    @GetMapping("/gestion")
+    public ResponseEntity<?> showMedicos() {
+        try {
+            List<Medico> medicos = service.ObtenerMedicosPendientes();
+
+            if (medicos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No se encontraron médicos registrados.");
+            }
+
+            // Convertir a DTO con estado
+            List<MedicoDTOGestion> medicosDTO = medicos.stream()
+                    .map(m -> new MedicoDTOGestion(
+                            m.getId(),
+                            m.getUsuario().getNombre(),
+                            m.getEspecialidad(),
+                            m.getCosto(),
+                            m.getLocalidad(),
+                            m.getFrecuenciaCitas(),
+                            m.getStatus()
+                    ))
+                    .toList();
+
+            return ResponseEntity.ok(medicosDTO);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener la lista de médicos: " + e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/gestion/{id}")
+    public ResponseEntity<?> aprobarMedico(@PathVariable String id){
+        try {
+            Medico medico = service.obtenerMedicoPorId(id);
+
+            if (medico == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Médico no encontrado o ya aprobado.");
+            }
+
+            service.aceptarMedico(medico.getId());
+            return ResponseEntity.ok(new MedicoResponseDTO(medico));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al aprobar el médico: " + e.getMessage());
         }
     }
 

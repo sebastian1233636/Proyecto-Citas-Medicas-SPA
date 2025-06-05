@@ -6,6 +6,7 @@ import Home from './pages/Home/home';
 import Registro from './pages/Registro/registro';
 import RegistroMedico from './pages/Registro/registroMedico';
 import HistorialPaciente from "./pages/Citas/historialCitas";
+import GestionMedicos from "./pages/Gestion/gestion";
 import { useContext } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
@@ -62,7 +63,7 @@ function Header() {
                 )}
                 {rol === 3 && (
                     <>
-                        <Link to="/gestion" className="App-link">Gestión</Link>
+                        <Link to="/GestionMedicos" className="App-link">Gestión</Link>
                         <Link to="/home" className="App-link">Search</Link>
                         <Link to="/logout" className="App-link">Logout</Link>
                     </>
@@ -83,6 +84,8 @@ function Main() {
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/historialPaciente" element={<HistorialPaciente />} />
+                <Route path="/GestionMedicos" element={<GestionMedicos />} />
+
             </Routes>
         </div>
     );
