@@ -34,8 +34,38 @@ public interface CitaRepository extends JpaRepository<Cita, String> {
     @Query("SELECT c.hora FROM Cita c WHERE c.medico = :medico AND c.fecha = :fecha")
     List<LocalTime> findOcupadosByMedicoAndFecha(@Param("medico") Medico medico, @Param("fecha") LocalDate fecha);
 
-    List<Cita> findByUsuarioIdAndStatusContainingIgnoreCaseAndMedicoUsuarioNombreContainingIgnoreCaseOrderByFechaDescHoraDesc(
-            String usuarioId, String status, String medicoNombre);
 
+    /**
+     * Busca citas por estado, médico ID y nombre del paciente
+     */
+    List<Cita> findByStatusAndMedicoIdAndUsuarioNombreContainingIgnoreCase(
+            String status, String medicoId, String nombrePaciente);
 
+    /**
+     * Busca citas por estado, usuario ID y nombre del médico
+     */
+    List<Cita> findByStatusAndUsuarioIdAndMedicoUsuarioNombreContainingIgnoreCase(
+            String status, String usuarioId, String nombreMedico);
+
+    /**
+     * Busca citas por nombre del médico y usuario ID
+     */
+    List<Cita> findByMedicoUsuarioNombreContainingIgnoreCaseAndUsuarioId(
+            String nombreMedico, String usuarioId);
+
+    /**
+     * Método personalizado para buscar citas con ordenamiento
+     */
+    @Query("SELECT c FROM Cita c WHERE c.medico.id = :medicoId " +
+            "ORDER BY c.fecha DESC, c.hora DESC")
+    List<Cita> findByMedicoIdOrderByFechaDescHoraDesc(@Param("medicoId") String medicoId);
+
+    /**
+     * Método personalizado para buscar citas de paciente con ordenamiento
+     */
+    @Query("SELECT c FROM Cita c WHERE c.usuario.id = :usuarioId " +
+            "ORDER BY c.fecha DESC, c.hora DESC")
+    List<Cita> findByUsuarioIdOrderByFechaDescHoraDesc(@Param("usuarioId") String usuarioId);
+
+    List<Cita> findByUsuarioNombreContainingIgnoreCaseAndMedicoId(String nombrePaciente, String medicoId);
 }

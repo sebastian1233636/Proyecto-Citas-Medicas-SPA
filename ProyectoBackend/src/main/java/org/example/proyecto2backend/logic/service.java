@@ -224,17 +224,83 @@ public class service {
         return cita.getNotas(); // Suponiendo que existe un campo "notas"
     }
 
+    public List<Cita> obtenerCitasMedico(String medicoId, String status, String nombrePaciente) {
+        List<Cita> citas;
 
-    // Devuelve todas las citas del usuario
-    public List<Cita> obtenerCitasUsuario(String usuarioId) {
-        return citaRepository.findByUsuarioId(usuarioId);
+        if (status != null && !status.isEmpty() && nombrePaciente != null && !nombrePaciente.isEmpty()) {
+            // Filtrar por ambos criterios
+            citas = citaRepository.findByStatusAndMedicoIdAndUsuarioNombreContainingIgnoreCase(
+                    status, medicoId, nombrePaciente);
+        } else if (status != null && !status.isEmpty()) {
+            // Filtrar solo por estado
+            citas = (List<Cita>) citaRepository.findByStatusAndMedicoId(status, medicoId);
+        } else if (nombrePaciente != null && !nombrePaciente.isEmpty()) {
+            // Filtrar solo por nombre del paciente
+            citas = (List<Cita>) citaRepository.findByUsuarioNombreContainingIgnoreCaseAndMedicoId(
+                    nombrePaciente, medicoId);
+        } else {
+            // Sin filtros
+            citas = (List<Cita>) citaRepository.findByMedicoId(medicoId);
+        }
+
+        // Ordenar por fecha y hora (más recientes primero)
+        return citas.stream()
+                .sorted((c1, c2) -> {
+                    int fechaComparison = c2.getFecha().compareTo(c1.getFecha());
+                    if (fechaComparison != 0) {
+                        return fechaComparison;
+                    }
+                    return c2.getHora().compareTo(c1.getHora());
+                })
+                .toList();
     }
 
-    // Filtra las citas del usuario por estado y/o nombre del médico
-    public List<Cita> filtrarCitasUsuario(String usuarioId, String estado, String medicoNombre) {
-            return citaRepository.findByUsuarioIdAndStatusContainingIgnoreCaseAndMedicoUsuarioNombreContainingIgnoreCaseOrderByFechaDescHoraDesc(
-                    usuarioId, estado, medicoNombre);
+    public List<Cita> obtenerCitasPaciente(String usuarioId, String status, String nombreMedico) {
+        List<Cita> citas;
+
+        if (status != null && !status.isEmpty() && nombreMedico != null && !nombreMedico.isEmpty()) {
+            // Filtrar por ambos criterios
+            citas = citaRepository.findByStatusAndUsuarioIdAndMedicoUsuarioNombreContainingIgnoreCase(
+                    status, usuarioId, nombreMedico);
+        } else if (status != null && !status.isEmpty()) {
+            // Filtrar solo por estado
+            citas = (List<Cita>) citaRepository.findByStatusAndUsuarioId(status, usuarioId);
+        } else if (nombreMedico != null && !nombreMedico.isEmpty()) {
+            // Filtrar solo por nombre del médico
+            citas = (List<Cita>) citaRepository.findByMedicoUsuarioNombreContainingIgnoreCaseAndUsuarioId(
+                    nombreMedico, usuarioId);
+        } else {
+            // Sin filtros
+            citas = citaRepository.findByUsuarioId(usuarioId);
+        }
+
+        // Ordenar por fecha y hora (más recientes primero)
+        return citas.stream()
+                .sorted((c1, c2) -> {
+                    int fechaComparison = c2.getFecha().compareTo(c1.getFecha());
+                    if (fechaComparison != 0) {
+                        return fechaComparison;
+                    }
+                    return c2.getHora().compareTo(c1.getHora());
+                })
+                .toList();
     }
+
+    public Cita obtenerCitaPorId(Integer citaId) {
+        return citaRepository.findById(String.valueOf(citaId)).orElse(null);
+    }
+
+    public void completarCita(Integer citaId, String nuevoStatus, String notas) {
+        Cita cita = citaRepository.findById(String.valueOf(citaId))
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+        cita.setStatus(nuevoStatus);
+        cita.setNotas(notas);
+
+        citaRepository.save(cita);
+    }
+
+
 
 
     public List<Medico> ObtenerMedicosPendientes() {

@@ -5,8 +5,8 @@ import Logout from './pages/Login/logout';
 import Home from './pages/Home/home';
 import Registro from './pages/Registro/registro';
 import RegistroMedico from './pages/Registro/registroMedico';
-import HistorialPaciente from "./pages/Citas/historialCitas";
 import GestionMedicos from "./pages/Gestion/gestion";
+import Historial from './pages/Citas/historial';
 import { useContext } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
@@ -47,7 +47,7 @@ function Header() {
                 )}
                 {rol === 1 && (
                     <>
-                        <Link to="/historialPaciente" className="App-link">Historial</Link>
+                        <Link to="/historialPacientes" className="App-link">Historial</Link>
                         <Link to="/home" className="App-link">Search</Link>
                         <Link to="/perfil" className="App-link">Mi Perfil</Link>
                         <Link to="/logout" className="App-link">Logout</Link>
@@ -55,7 +55,7 @@ function Header() {
                 )}
                 {rol === 2 && (
                     <>
-                        <Link to="/historial" className="App-link">Citas</Link>
+                        <Link to="/historialMedicos" className="App-link">Citas</Link>
                         <Link to="/home" className="App-link">Search</Link>
                         <Link to="/perfil" className="App-link">Mi Perfil</Link>
                         <Link to="/logout" className="App-link">Logout</Link>
@@ -83,9 +83,10 @@ function Main() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/historialPaciente" element={<HistorialPaciente />} />
                 <Route path="/GestionMedicos" element={<GestionMedicos />} />
-
+                {/* Rutas del historial */}
+                <Route path="/historialPacientes" element={<Historial />} />
+                <Route path="/historialMedicos" element={<Historial />} />
             </Routes>
         </div>
     );
