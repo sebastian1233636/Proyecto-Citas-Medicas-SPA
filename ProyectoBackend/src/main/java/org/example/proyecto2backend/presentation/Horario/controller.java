@@ -22,15 +22,6 @@ public class controller {
         return service.obtenerHorariosPorMedico(medicoId);
     }
 
-    @PostMapping("/agregar")
-    public Horario agregarHorario(@RequestBody HorarioDTO dto) {
-        return service.agregarHorario(
-                dto.getMedicoId(),
-                dto.getDia(),
-                LocalTime.parse(dto.getHoraInicio()),
-                LocalTime.parse(dto.getHoraFin())
-        );
-    }
 
     @PostMapping("/eliminar")
     public void eliminarHorario(@RequestBody EliminarHorarioDTO dto) {
