@@ -8,6 +8,12 @@ const MiPerfil = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [mensajeError, setMensajeError] = useState("");
+    const [editando, setEditando] = useState(false);
+    const [formData, setFormData] = useState({
+        localidad: "",
+        frecuenciaCitas: "",
+        costo: ""
+    });
 
     const fetchPerfil = async () => {
         setLoading(true);
@@ -24,6 +30,11 @@ const MiPerfil = () => {
             if (response.ok) {
                 const data = await response.json();
                 setPerfil(data);
+                setFormData({
+                    localidad: data.localidad || "",
+                    frecuenciaCitas: data.frecuenciaCitas || "",
+                    costo: data.costo || ""
+                });
             } else {
                 setError(true);
             }
@@ -90,6 +101,43 @@ const MiPerfil = () => {
         }
     };
 
+    const confirmarEdicion = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${backend}/api/perfil/actualizar`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    id: perfil.id,
+                    localidad: formData.localidad,
+                    frecuenciaCitas: formData.frecuenciaCitas,
+                    costo: formData.costo
+                })
+            });
+
+            if (response.ok) {
+                setEditando(false);
+                await fetchPerfil();
+            } else {
+                const errorData = await response.json();
+                setMensajeError(errorData.message || "Error al guardar los cambios.");
+            }
+        } catch (err) {
+            console.error("Error al actualizar perfil:", err);
+            setMensajeError("Error al actualizar perfil.");
+        }
+    };
+
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
     useEffect(() => {
         fetchPerfil();
     }, []);
@@ -113,9 +161,61 @@ const MiPerfil = () => {
                     <section className="datos-medico">
                         <h2>Información del Médico</h2>
                         <p><strong>Especialidad:</strong> {perfil.especialidad}</p>
-                        <p><strong>Costo por Consulta:</strong> ₡{perfil.costo}</p>
-                        <p><strong>Localidad:</strong> {perfil.localidad}</p>
-                        <p><strong>Frecuencia de Citas:</strong> Cada {perfil.frecuenciaCitas} días</p>
+
+                        <p>
+                            <strong>Localidad:</strong>{" "}
+                            {editando ? (
+                                <input
+                                    name="localidad"
+                                    value={formData.localidad}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                perfil.localidad
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>Frecuencia de Citas:</strong>{" "}
+                            {editando ? (
+                                <input
+                                    name="frecuenciaCitas"
+                                    type="number"
+                                    min="1"
+                                    value={formData.frecuenciaCitas}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                `Cada ${perfil.frecuenciaCitas} minutos`
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>Costo por Consulta:</strong>{" "}
+                            {editando ? (
+                                <input
+                                    name="costo"
+                                    type="number"
+                                    min="0"
+                                    value={formData.costo}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                `₡${perfil.costo}`
+                            )}
+                        </p>
+
+                        {!editando ? (
+                            <button onClick={() => setEditando(true)} className="btn-agregar">
+                                Editar
+                            </button>
+                        ) : (
+                            <button onClick={confirmarEdicion} className="btn-agregar">
+                                Confirmar
+                            </button>
+                        )}
+
+                        {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
                     </section>
 
                     <section className="horarios-atencion">

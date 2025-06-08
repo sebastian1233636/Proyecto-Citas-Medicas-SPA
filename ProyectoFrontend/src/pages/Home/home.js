@@ -7,14 +7,15 @@ function Home() {
     const backend = "http://localhost:8080";
     const [medicos, setMedicos] = useState([]);
     const [disponibilidad, setDisponibilidad] = useState({});
-
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
     const [showModal, setShowModal] = useState(false);
-
     const [especialidad, setEspecialidad] = useState("");
     const [localidad, setLocalidad] = useState("");
+
+    // Nueva variable para guardar citas confirmadas
+    const [confirmedAppointments, setConfirmedAppointments] = useState([]);
 
     const { user } = useContext(AppContext);
     const navigate = useNavigate();
@@ -22,8 +23,6 @@ function Home() {
     useEffect(() => {
         fetchMedicos();
     }, []);
-
-
 
     const handleTimeClick = (doctor, date, time) => {
         setSelectedDoctor(doctor);
@@ -48,6 +47,7 @@ function Home() {
 
             if (response.ok) {
                 alert("¡Cita confirmada con éxito!");
+                setConfirmedAppointments(prev => [...prev, { doctorId, date: selectedDate, time: selectedTime }]);
                 setShowModal(false);
             } else {
                 alert("Error al confirmar la cita");
@@ -168,11 +168,24 @@ function Home() {
                                                 {new Date(fecha).toLocaleDateString("es-ES")}
                                             </div>
                                             <div className="times">
-                                                {horas.map((hora, j) => (
-                                                    <button key={j} onClick={() => handleTimeClick(medico, fecha, hora)}>
-                                                        {hora}
-                                                    </button>
-                                                ))}
+                                                {horas.map((hora, j) => {
+                                                    const isConfirmed = confirmedAppointments.some(app =>
+                                                        app.doctorId === medico.id &&
+                                                        app.date === fecha &&
+                                                        app.time === hora
+                                                    );
+
+                                                    return (
+                                                        <button
+                                                            key={j}
+                                                            onClick={() => handleTimeClick(medico, fecha, hora)}
+                                                            disabled={isConfirmed}
+                                                            className={isConfirmed ? 'disabled-time' : ''}
+                                                        >
+                                                            {hora}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     ))}
@@ -218,8 +231,6 @@ function Home() {
                     </div>
                 </div>
             )}
-
-
         </>
     );
 }

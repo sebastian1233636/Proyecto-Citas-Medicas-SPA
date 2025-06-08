@@ -94,16 +94,7 @@ public class controller {
     }
 
 
-    @PostMapping("/actualizar")
-    public Medico actualizarPerfil(@RequestBody MedicoDTO dto) {
-        return service.actualizarMedico(
-                dto.id(),
-                dto.especialidad(),
-                dto.costo(),
-                dto.localidad(),
-                dto.frecuenciaCitas()
-        );
-    }
+
 
 
     @DeleteMapping("/eliminarHorario/{id}/{dia}")
@@ -138,6 +129,49 @@ public class controller {
             return ResponseEntity.internalServerError().body("Error inesperado: " + e.getMessage());
         }
     }
+
+
+    @PutMapping("/actualizar")
+    public ResponseEntity<?> actualizarPerfil(@AuthenticationPrincipal Jwt jwt,
+                                              @RequestBody PerfilMedicoDTO perfilMedicoDTO) {
+        try {
+            String id = jwt.getClaimAsString("id");
+            if (id == null || id.isBlank()) {
+                return ResponseEntity.badRequest().body("ID de usuario no encontrado en el token.");
+            }
+
+            Medico medico = service.obtenerMedicoPorId(id);
+            if (medico == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Médico no encontrado.");
+            }
+
+            // Actualización parcial: solo actualizar si los valores no son nulos
+            if (perfilMedicoDTO.especialidad() != null) {
+                medico.setEspecialidad(perfilMedicoDTO.especialidad());
+            }
+
+            if (perfilMedicoDTO.costo() != null) {
+                medico.setCosto(perfilMedicoDTO.costo());
+            }
+
+            if (perfilMedicoDTO.localidad() != null) {
+                medico.setLocalidad(perfilMedicoDTO.localidad());
+            }
+
+            if (perfilMedicoDTO.frecuenciaCitas() != null) {
+                medico.setFrecuenciaCitas(perfilMedicoDTO.frecuenciaCitas());
+            }
+
+            service.actualizarMedico(medico);
+
+            return ResponseEntity.ok("Perfil actualizado correctamente");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar el perfil: " + ex.getMessage());
+        }
+    }
+
 
 
 
