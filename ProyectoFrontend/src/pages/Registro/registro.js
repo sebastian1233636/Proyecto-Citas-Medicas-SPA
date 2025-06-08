@@ -12,21 +12,33 @@ export default function Registro() {
         imagen: null
     });
 
+    const [confirmClave, setConfirmClave] = useState(""); // Nuevo estado para confirmar la contraseña
     const [error, setError] = useState("");
 
     const backend = "http://localhost:8080";
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        setFormData({
-            ...formData,
-            [name]: files ? files[0] : value
-        });
+
+        if (name === "confirmClave") {
+            setConfirmClave(value);
+        } else {
+            setFormData({
+                ...formData,
+                [name]: files ? files[0] : value
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+
+        // Validar que las contraseñas coincidan
+        if (formData.clave !== confirmClave) {
+            setError("Las contraseñas no coinciden.");
+            return;
+        }
 
         try {
             const dataToSend = new FormData();
@@ -76,7 +88,12 @@ export default function Registro() {
 
                 <div className="input-group">
                     <i className="fas fa-key"></i>
-                    <input type="password" name="clave" placeholder="Password" required value={formData.clave} onChange={handleChange} />
+                    <input type="password" name="clave" placeholder="Contraseña" required value={formData.clave} onChange={handleChange} />
+                </div>
+
+                <div className="input-group">
+                    <i className="fas fa-key"></i>
+                    <input type="password" name="confirmClave" placeholder="Confirmar Contraseña" required value={confirmClave} onChange={handleChange} />
                 </div>
 
                 <div className="input-group">

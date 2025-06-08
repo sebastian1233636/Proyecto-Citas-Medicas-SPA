@@ -1,11 +1,7 @@
 package org.example.proyecto2backend.presentation.citas;
 
-import com.nimbusds.jwt.JWT;
 import lombok.AllArgsConstructor;
 import org.example.proyecto2backend.logic.Cita;
-import org.example.proyecto2backend.logic.DTOs.CitaRequestDTO;
-import org.example.proyecto2backend.logic.DTOs.NotaCitaDTO;
-import org.example.proyecto2backend.logic.DTOs.ReservaRequestDTO;
 import org.example.proyecto2backend.logic.Medico;
 import org.example.proyecto2backend.logic.Usuario;
 import org.example.proyecto2backend.logic.service;
@@ -15,14 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController("citasController")
@@ -37,14 +29,12 @@ public class controller {
                                          @RequestParam("ddt") String fechaHora,
                                          @AuthenticationPrincipal Jwt jwt) {
         try {
-            // Obtener médico
             Medico medico = service.obtenerMedicoPorId(medicoId);
             if (medico == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Médico no encontrado"));
             }
 
-            // Obtener usuario desde JWT
             String usuarioId = jwt.getClaimAsString("id");
             Usuario usuario = service.findUsuarioById(usuarioId); // método que recupera desde DB
 
@@ -53,7 +43,6 @@ public class controller {
                         .body(Map.of("error", "Usuario no válido"));
             }
 
-            // Separar fecha y hora
             String[] partes = fechaHora.split("T");
             if (partes.length != 2) {
                 return ResponseEntity.badRequest()
@@ -66,7 +55,6 @@ public class controller {
             DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
             LocalTime hora = LocalTime.parse(partes[1], formatterHora);
 
-            // Crear y guardar cita
             Cita cita = new Cita();
             cita.setMedico(medico);
             cita.setUsuario(usuario);
@@ -86,11 +74,4 @@ public class controller {
                     .body(Map.of("error", "Error interno", "detalle", e.getMessage()));
         }
     }
-
-
-
-
-
 }
-
-

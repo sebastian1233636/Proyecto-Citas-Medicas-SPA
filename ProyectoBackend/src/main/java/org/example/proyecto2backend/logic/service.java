@@ -170,8 +170,6 @@ public class service {
         return citaRepository.findOcupadosByMedicoAndFecha(medico, fecha);
     }
 
-
-
     public Iterable<Cita> filtroHistorialPaciente(String status, String id, String idpaciente) {
         if (id != null && !id.isEmpty()) {
             if (status != null && !status.isEmpty()) {
@@ -188,8 +186,6 @@ public class service {
     }
 
     public Iterable<Cita> filtroHistorialMedico(String status, String userid, String idDoctor) {
-
-        //userid es la id del medico
         if (userid != null && !userid.isEmpty()) {
             if (status != null && !status.isEmpty()) {
                 return citaRepository.findByStatusAndUsuarioId(status, userid);
@@ -243,7 +239,6 @@ public class service {
             citas = (List<Cita>) citaRepository.findByMedicoId(medicoId);
         }
 
-        // Ordenar por fecha y hora (más recientes primero)
         return citas.stream()
                 .sorted((c1, c2) -> {
                     int fechaComparison = c2.getFecha().compareTo(c1.getFecha());
@@ -259,22 +254,17 @@ public class service {
         List<Cita> citas;
 
         if (status != null && !status.isEmpty() && nombreMedico != null && !nombreMedico.isEmpty()) {
-            // Filtrar por ambos criterios
             citas = citaRepository.findByStatusAndUsuarioIdAndMedicoUsuarioNombreContainingIgnoreCase(
                     status, usuarioId, nombreMedico);
         } else if (status != null && !status.isEmpty()) {
-            // Filtrar solo por estado
             citas = (List<Cita>) citaRepository.findByStatusAndUsuarioId(status, usuarioId);
         } else if (nombreMedico != null && !nombreMedico.isEmpty()) {
-            // Filtrar solo por nombre del médico
             citas = (List<Cita>) citaRepository.findByMedicoUsuarioNombreContainingIgnoreCaseAndUsuarioId(
                     nombreMedico, usuarioId);
         } else {
-            // Sin filtros
             citas = citaRepository.findByUsuarioId(usuarioId);
         }
 
-        // Ordenar por fecha y hora (más recientes primero)
         return citas.stream()
                 .sorted((c1, c2) -> {
                     int fechaComparison = c2.getFecha().compareTo(c1.getFecha());
@@ -300,11 +290,57 @@ public class service {
         citaRepository.save(cita);
     }
 
-
-
-
     public List<Medico> ObtenerMedicosPendientes() {
         return medicoRepository.findByStatus("Pendiente");
+    }
+
+    public Usuario buscarUsuario(String username) {
+        return usuarioRepository.findByNombreContainingIgnoreCase(username);
+    }
+
+    public Medico actualizarMedico(String id, String especialidad, BigDecimal costo, String localidad, Integer frecuencia) {
+        Medico medico = medicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Médico no encontrado con ID: " + id));
+
+        medico.setEspecialidad(especialidad);
+        medico.setCosto(costo);
+        medico.setLocalidad(localidad);
+        medico.setFrecuenciaCitas(frecuencia);
+
+        return medicoRepository.save(medico);
+    }
+
+    public List<Horario> obtenerHorariosPorMedico(Integer medicoId) {
+        return horarioRepository.findByMedicoId(medicoId.toString()); // o ajusta según el tipo que uses
+    }
+
+    public Horario agregarHorario(Integer medicoId, String dia, LocalTime horaInicio, LocalTime horaFin) {
+        Medico medico = medicoRepository.findById(medicoId.toString())
+                .orElseThrow(() -> new RuntimeException("Médico no encontrado con ID: " + medicoId));
+
+        if (horaFin.isBefore(horaInicio) || horaFin.equals(horaInicio)) {
+            throw new IllegalArgumentException("La hora de finalización debe ser mayor a la de inicio.");
+        }
+
+        List<Horario> horariosExistentes = horarioRepository.findByMedicoIdAndDia(medicoId.toString(), dia);
+        if (!horariosExistentes.isEmpty()) {
+            throw new IllegalArgumentException("El médico ya tiene un horario asignado para el día " + dia);
+        }
+
+        Horario nuevoHorario = new Horario();
+        nuevoHorario.setMedico(medico);
+        nuevoHorario.setDia(dia);
+        nuevoHorario.setHoraInicio(horaInicio);
+        nuevoHorario.setHoraFin(horaFin);
+
+        return horarioRepository.save(nuevoHorario);
+    }
+
+    public void eliminarHorario(Integer id, String dia) {
+        Optional<Horario> horario = horarioRepository.findById(id.toString());
+        if (horario.isPresent() && horario.get().getDia().equalsIgnoreCase(dia)) {
+            horarioRepository.delete(horario.get());
+        }
     }
 
 

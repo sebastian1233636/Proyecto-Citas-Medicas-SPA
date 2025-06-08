@@ -32,7 +32,6 @@ public class Controller {
     @Autowired
     private final service service;
 
-    // Endpoint para médicos: ver sus citas
     @GetMapping("/medico/{medicoId}")
     public ResponseEntity<?> obtenerCitasMedico(
             @PathVariable String medicoId,
@@ -40,7 +39,6 @@ public class Controller {
             @RequestParam(required = false) String nombrePaciente) {
 
         try {
-            // Verificar que el médico existe
             Medico medico = medicoRepository.findById(medicoId)
                     .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
 
@@ -51,7 +49,6 @@ public class Controller {
                         .body("No se encontraron citas para los criterios especificados.");
             }
 
-            // Convertir a DTO
             List<CitaDTO> citasDTO = citas.stream()
                     .map(c -> new CitaDTO(
                             c.getId(),
@@ -72,7 +69,6 @@ public class Controller {
         }
     }
 
-    // Endpoint para pacientes: ver sus citas
     @GetMapping("/paciente/{pacienteId}")
     public ResponseEntity<?> obtenerCitasPaciente(
             @PathVariable String pacienteId,
@@ -80,7 +76,6 @@ public class Controller {
             @RequestParam(required = false) String nombreMedico) {
 
         try {
-            // Verificar que el usuario existe
             Usuario usuario = usuarioRepository.findById(pacienteId)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -91,7 +86,6 @@ public class Controller {
                         .body("No se encontraron citas para los criterios especificados.");
             }
 
-            // Convertir a DTO
             List<CitaDTO> citasDTO = citas.stream()
                     .map(c -> new CitaDTO(
                             c.getId(),
@@ -112,7 +106,6 @@ public class Controller {
         }
     }
 
-    // Endpoint para completar/actualizar una cita (solo médicos)
     @PutMapping("/completar/{citaId}")
     public ResponseEntity<?> completarCita(
             @PathVariable Integer citaId,
@@ -126,10 +119,8 @@ public class Controller {
                         .body("Cita no encontrada.");
             }
 
-            // Actualizar el estado y las notas
             service.completarCita(citaId, dto.status(), dto.notas());
 
-            // Obtener la cita actualizada
             Cita citaActualizada = service.obtenerCitaPorId(citaId);
 
             return ResponseEntity.ok(new CitaResponseDTO(citaActualizada));
@@ -140,7 +131,6 @@ public class Controller {
         }
     }
 
-    // Endpoint para obtener una cita específica por ID
     @GetMapping("/cita/{citaId}")
     public ResponseEntity<?> obtenerCitaPorId(@PathVariable Integer citaId) {
         try {
@@ -169,5 +159,3 @@ public class Controller {
         }
     }
 }
-
-
