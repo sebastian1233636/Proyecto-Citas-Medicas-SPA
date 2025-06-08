@@ -26,7 +26,6 @@
     font-weight: 500;
 }
 
-/* Filtros */
 .filtros-container {
     background: white;
     padding: 20px;
@@ -90,7 +89,6 @@
     background-color: #0056b3;
 }
 
-/* Lista de citas */
 .loading {
     text-align: center;
     padding: 40px;
@@ -192,7 +190,6 @@
     font-size: 12px;
 }
 
-/* Estados */
 .status-actions {
     display: flex;
     align-items: center;
@@ -228,7 +225,6 @@
     color: white;
 }
 
-/* Íconos de acciones */
 .action-icons {
     display: flex;
     gap: 8px;
@@ -263,7 +259,6 @@
     transform: scale(1.1);
 }
 
-/* Notas */
 .notas-cell {
     max-width: 200px;
     overflow: hidden;
@@ -271,7 +266,6 @@
     white-space: nowrap;
 }
 
-/* Botones de acción */
 .btn-completar {
     background-color: #28a745;
     color: white;
@@ -291,7 +285,6 @@
     cursor: not-allowed;
 }
 
-/* Modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -399,55 +392,4 @@
 
 .btn-secondary:hover {
     background-color: #5a6268;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .historial-container {
-        padding: 20px 10px;
-    }
-
-    .filtros-container {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .filtro-grupo {
-        justify-content: space-between;
-    }
-
-    .filtro-grupo input,
-    .filtro-grupo select {
-        min-width: auto;
-        flex: 1;
-    }
-
-    .cita-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .cita-info {
-        width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .cita-datetime {
-        margin-right: 0;
-        text-align: left;
-    }
-
-    .status-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .modal {
-        margin: 10px;
-        width: calc(100% - 20px);
-    }
 }

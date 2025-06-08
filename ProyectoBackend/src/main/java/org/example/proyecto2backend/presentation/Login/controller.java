@@ -1,6 +1,5 @@
 package org.example.proyecto2backend.presentation.Login;
 
-
 import lombok.AllArgsConstructor;
 import org.example.proyecto2backend.Security.TokenService;
 import org.example.proyecto2backend.data.RolRepository;
@@ -12,6 +11,7 @@ import org.example.proyecto2backend.logic.Rol;
 import org.example.proyecto2backend.logic.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 
 @RestController("loginController")
 @AllArgsConstructor
@@ -100,6 +100,24 @@ public class controller {
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
+    }
+
+    @GetMapping("/imagen/{id}")
+    @ResponseBody
+    public ResponseEntity<byte[]> obtenerImagen(@PathVariable("id") String id) {
+        try {
+            Path pathImagen = Paths.get(System.getProperty("user.home") + "/Documents/Usuarios/" + id + ".jpg");
+
+            if (Files.exists(pathImagen)) {
+                byte[] imagenBytes = Files.readAllBytes(pathImagen);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(imagenBytes);
+            }
+        } catch (IOException e) {
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
 }

@@ -7,7 +7,8 @@ import Registro from './pages/Registro/registro';
 import RegistroMedico from './pages/Registro/registroMedico';
 import GestionMedicos from "./pages/Gestion/gestion";
 import Historial from './pages/Citas/historial';
-import { useContext } from "react";
+import MiPerfil from './pages/MiPerfil/miPerfil';
+import { useContext, useState, useRef, useEffect } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
 import { Link, BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -29,8 +30,20 @@ function App() {
 function Header() {
     const { authState } = useContext(AppContext);
     const rol = authState.user?.rol;
+    const userId = authState.user?.id;
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef(null);
 
-    console.log("Estado de autenticación:", authState);
+    // Cierra menú si clic fuera
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowMenu(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     return (
         <header className="App-header">
@@ -49,16 +62,12 @@ function Header() {
                     <>
                         <Link to="/historialPacientes" className="App-link">Historial</Link>
                         <Link to="/home" className="App-link">Search</Link>
-                        <Link to="/perfil" className="App-link">Mi Perfil</Link>
-                        <Link to="/logout" className="App-link">Logout</Link>
                     </>
                 )}
                 {rol === 2 && (
                     <>
                         <Link to="/historialMedicos" className="App-link">Citas</Link>
                         <Link to="/home" className="App-link">Search</Link>
-                        <Link to="/perfil" className="App-link">Mi Perfil</Link>
-                        <Link to="/logout" className="App-link">Logout</Link>
                     </>
                 )}
                 {rol === 3 && (
@@ -67,6 +76,23 @@ function Header() {
                         <Link to="/home" className="App-link">Search</Link>
                         <Link to="/logout" className="App-link">Logout</Link>
                     </>
+                )}
+
+                {(rol === 1 || rol === 2) && (
+                    <div className="profile-menu" ref={menuRef}>
+                        <img
+                            src={`http://localhost:8080/user/imagen/${userId}`}
+                            alt="avatar"
+                            className="user-avatar"
+                            onClick={() => setShowMenu(!showMenu)}
+                        />
+                        {showMenu && (
+                            <div className="dropdown-menu">
+                                <Link to="/perfil" className="App-link">Mi Perfil</Link>
+                                <Link to="/logout" className="App-link">Logout</Link>
+                            </div>
+                        )}
+                    </div>
                 )}
             </nav>
         </header>
@@ -84,7 +110,7 @@ function Main() {
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/GestionMedicos" element={<GestionMedicos />} />
-                {/* Rutas del historial */}
+                <Route path="/perfil" element={<MiPerfil />} />
                 <Route path="/historialPacientes" element={<Historial />} />
                 <Route path="/historialMedicos" element={<Historial />} />
             </Routes>

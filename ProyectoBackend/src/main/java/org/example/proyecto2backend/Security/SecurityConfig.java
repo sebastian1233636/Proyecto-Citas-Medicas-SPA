@@ -40,7 +40,7 @@ public class SecurityConfig {
                     configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
                     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-                    configuration.setAllowCredentials(true); // <- esto a veces es necesario
+                    configuration.setAllowCredentials(true);
                     return configuration;
                 }))
                 .sessionManagement(sessionManagement -> sessionManagement
@@ -48,8 +48,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/Medico/register/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/usuario/imagen/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/user/imagen/**").permitAll()
                         .requestMatchers("/user/**", "/Medico/**").permitAll()
+                        .requestMatchers("/MiPerfil", "/horario/**", "/medico/actualizar").hasAnyAuthority("SCOPE_MED", "SCOPE_ADM")
                         .requestMatchers("/personas/**").hasAnyAuthority("SCOPE_CLI", "SCOPE_ADM")
                         .requestMatchers("/productos/**").hasAuthority("SCOPE_ADM")
                         .anyRequest().authenticated())
@@ -80,6 +81,4 @@ public class SecurityConfig {
         return username -> userRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
-
 }

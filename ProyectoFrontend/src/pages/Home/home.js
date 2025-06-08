@@ -13,8 +13,6 @@ function Home() {
     const [selectedTime, setSelectedTime] = useState("");
     const [showModal, setShowModal] = useState(false);
 
-
-    // Los dos filtros separados
     const [especialidad, setEspecialidad] = useState("");
     const [localidad, setLocalidad] = useState("");
 
@@ -60,8 +58,6 @@ function Home() {
         }
     };
 
-
-
     const fetchMedicos = async (esp = "", loc = "") => {
         try {
             const token = localStorage.getItem("token");
@@ -74,12 +70,10 @@ function Home() {
                 url = `${backend}/Medico/home/filtrado?${params.toString()}`;
             }
 
-            // Construimos headers dinámicamente
             const headers = {
                 "Content-Type": "application/json",
             };
 
-            // Solo si hay token, lo agregamos
             if (token) {
                 headers["Authorization"] = `Bearer ${token}`;
             }
@@ -151,17 +145,20 @@ function Home() {
                     <tr key={index} className="appointment-row">
                         <td className="doctor-info">
                             <img
-                                src={`${backend}/usuario/imagen/${medico.id}`}
+                                src={`${backend}/user/imagen/${medico.id}`}
                                 alt="Medico"
                                 className="picture"
                             />
                             <div className="doctor-details">
-                                <strong>{medico.nombre}</strong>
-                                <span className="price">{medico.costo}</span>
+                                <div className="name-price">
+                                    <strong>{medico.nombre}</strong>
+                                    <span className="price">{medico.costo}</span>
+                                </div>
                                 <p>{medico.especialidad}</p>
                                 <p className="hospital">{medico.localidad}</p>
                             </div>
                         </td>
+
                         <td className="availability">
                             <div className="dates-times-container">
                                 {disponibilidad[String(medico.id)] &&
@@ -175,27 +172,25 @@ function Home() {
                                                     <button key={j} onClick={() => handleTimeClick(medico, fecha, hora)}>
                                                         {hora}
                                                     </button>
-
                                                 ))}
                                             </div>
                                         </div>
                                     ))}
                             </div>
-                            <div className="button-container">
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => navigate(`/home/${medico.id}/schedule`)}
-                                >
-                                    Schedule
-                                </button>
-                            </div>
+                        </td>
+
+                        <td className="button-container">
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => navigate(`/home/${medico.id}/schedule`)}
+                            >
+                                Schedule
+                            </button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
-
-
 
             {showModal && selectedDoctor && (
                 <div className="modal-overlay">
@@ -228,6 +223,5 @@ function Home() {
         </>
     );
 }
-
 
 export default Home;

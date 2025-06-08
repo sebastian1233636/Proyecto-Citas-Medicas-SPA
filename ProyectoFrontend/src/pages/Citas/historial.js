@@ -7,7 +7,7 @@ const Historial = () => {
     const [citas, setCitas] = useState([]);
     const [filtros, setFiltros] = useState({
         status: '',
-        nombre: '' // nombrePaciente para médicos, nombreMedico para pacientes
+        nombre: ''
     });
     const [citaSeleccionada, setCitaSeleccionada] = useState(null);
     const [modalCompletarVisible, setModalCompletarVisible] = useState(false);
@@ -19,7 +19,6 @@ const Historial = () => {
     const navigate = useNavigate();
     const backend = "http://localhost:8080";
 
-    // Determinar si es médico o paciente
     const esMedico = authState.user?.rol === 2;
     const userId = authState.user?.id;
 
@@ -34,7 +33,6 @@ const Historial = () => {
             setLoading(true);
             const token = localStorage.getItem("token");
 
-            // Construir URL según el rol
             let url;
             const params = new URLSearchParams();
 
@@ -129,7 +127,7 @@ const Historial = () => {
             if (response.ok) {
                 alert("Cita actualizada exitosamente");
                 setModalCompletarVisible(false);
-                fetchCitas(); // Recargar la lista
+                fetchCitas();
             } else {
                 throw new Error("Error al actualizar la cita");
             }
@@ -165,7 +163,6 @@ const Historial = () => {
         <div className="historial-container">
             <h2>{esMedico ? 'Doctor' : 'Patient'} - <span className="patient-name">{authState.user.name || 'Usuario'}</span> - {esMedico ? 'appointments' : 'appointment history'}</h2>
 
-            {/* Filtros */}
             <div className="filtros-container">
                 <div className="filtro-grupo">
                     <label htmlFor="status">Status:</label>

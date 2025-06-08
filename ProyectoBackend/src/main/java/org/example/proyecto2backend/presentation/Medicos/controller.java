@@ -1,6 +1,5 @@
 package org.example.proyecto2backend.presentation.Medicos;
 
-
 import lombok.AllArgsConstructor;
 import org.example.proyecto2backend.data.MedicoRepository;
 import org.example.proyecto2backend.data.UsuarioRepository;
@@ -82,7 +81,6 @@ public class controller {
                 disponibilidad.put(medico.getId(), fechas);
             }
 
-            // Convertir a DTO incluyendo el nombre
             List<MedicoDTO> medicosDTO = medicos.stream()
                     .map(m -> new MedicoDTO(
                             m.getId(),
@@ -149,8 +147,6 @@ public class controller {
         }
     }
 
-
-
     @GetMapping("/gestion")
     public ResponseEntity<?> showMedicos() {
         try {
@@ -161,7 +157,6 @@ public class controller {
                         .body("No se encontraron médicos registrados.");
             }
 
-            // Convertir a DTO con estado
             List<MedicoDTOGestion> medicosDTO = medicos.stream()
                     .map(m -> new MedicoDTOGestion(
                             m.getId(),
@@ -182,7 +177,6 @@ public class controller {
         }
     }
 
-
     @PutMapping("/gestion/{id}")
     public ResponseEntity<?> aprobarMedico(@PathVariable String id){
         try {
@@ -200,5 +194,4 @@ public class controller {
                     .body("Error al aprobar el médico: " + e.getMessage());
         }
     }
-
 }
