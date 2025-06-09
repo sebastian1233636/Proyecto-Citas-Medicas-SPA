@@ -32,8 +32,8 @@ const GestionMedicos = () => {
             }
 
             const data = await response.json();
-            console.log("Datos médicos del backend:", data);  // Aquí verás lo que realmente llega
-            setMedicos(data); // Asume que data es un array
+            console.log("Datos médicos del backend:", data);
+            setMedicos(data);
 
 
         } catch (error) {
@@ -75,7 +75,7 @@ const GestionMedicos = () => {
 
     return (
         <div>
-            <h2>Médicos Pendientes de Aprobación</h2>
+            <h2 className="gestion-title">Médicos Pendientes de Aprobación</h2>
             <table className="gestion-table">
                 <thead>
                 <tr>
@@ -94,7 +94,7 @@ const GestionMedicos = () => {
                         <tr key={medico.id} className="medicos-row">
                             <td>
                                 <img
-                                    src={`http://localhost:8080/usuario/imagen/${medico.id}`}
+                                    src={`http://localhost:8080/user/imagen/${medico.id}`}
                                     alt="Medico"
                                     className="picture rounded-circle"
                                 />

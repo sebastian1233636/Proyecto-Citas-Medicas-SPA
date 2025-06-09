@@ -76,12 +76,16 @@ public class controller {
 
             List<Medico> medicos = (List<Medico>) service.medicoFindAll();
 
-            for (Medico medico : medicos) {
+            List<Medico> medicosAprobados = medicos.stream()
+                    .filter(m -> "Aprobado".equalsIgnoreCase(m.getStatus()))
+                    .toList();
+
+            for (Medico medico : medicosAprobados) {
                 Map<LocalDate, List<String>> fechas = medico.getFechas(semana);
                 disponibilidad.put(medico.getId(), fechas);
             }
 
-            List<MedicoDTO> medicosDTO = medicos.stream()
+            List<MedicoDTO> medicosDTO = medicosAprobados.stream()
                     .map(m -> new MedicoDTO(
                             m.getId(),
                             m.getUsuario().getNombre(),
@@ -120,7 +124,12 @@ public class controller {
         try {
             List<Medico> medicosFiltrados = service.FiltradoMedicos(especialidad, localidad);
 
-            List<MedicoDTO> medicosDTO = medicosFiltrados.stream()
+            List<Medico> medicosAprobados = medicosFiltrados.stream()
+                    .filter(m -> "Aprobado".equalsIgnoreCase(m.getStatus()))
+                    .toList();
+
+            // Mapear a DTO
+            List<MedicoDTO> medicosDTO = medicosAprobados.stream()
                     .map(m -> new MedicoDTO(
                             m.getId(),
                             m.getUsuario().getNombre(),
@@ -130,8 +139,9 @@ public class controller {
                             m.getFrecuenciaCitas()
                     ))
                     .toList();
+
             Map<String, Map<LocalDate, List<String>>> disponibilidad = new HashMap<>();
-            for (Medico medico : medicosFiltrados) {
+            for (Medico medico : medicosAprobados) {
                 disponibilidad.put(medico.getId(), medico.getFechas(semana));
             }
 
@@ -146,6 +156,7 @@ public class controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     @GetMapping("/gestion")
     public ResponseEntity<?> showMedicos() {

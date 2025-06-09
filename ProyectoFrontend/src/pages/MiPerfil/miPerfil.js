@@ -8,102 +8,54 @@ const MiPerfil = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [mensajeError, setMensajeError] = useState("");
-    const [editando, setEditando] = useState(false);
+    const [mensajeExito, setMensajeExito] = useState("");
     const [formData, setFormData] = useState({
+        especialidad: "",
+        costo: "",
         localidad: "",
-        frecuenciaCitas: "",
-        costo: ""
+        frecuenciaCitas: ""
     });
 
     const fetchPerfil = async () => {
-        setLoading(true);
-        setError(false);
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(backend + "/api/perfil/miPerfil", {
-                method: "GET",
+            const response = await fetch(`${backend}/api/perfil/miPerfil`, {
                 headers: {
-                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
-                },
+                }
             });
+
             if (response.ok) {
                 const data = await response.json();
                 setPerfil(data);
                 setFormData({
-                    localidad: data.localidad || "",
-                    frecuenciaCitas: data.frecuenciaCitas || "",
-                    costo: data.costo || ""
+                    especialidad: data.especialidad ?? "",
+                    costo: data.costo !== null && data.costo !== undefined ? data.costo : "",
+                    localidad: data.localidad ?? "",
+                    frecuenciaCitas: data.frecuenciaCitas !== null && data.frecuenciaCitas !== undefined ? data.frecuenciaCitas : ""
                 });
             } else {
                 setError(true);
             }
         } catch (err) {
-            console.error("Error al cargar el perfil:", err);
             setError(true);
         } finally {
             setLoading(false);
         }
     };
 
-    const eliminarHorario = async (id, dia) => {
-        const token = localStorage.getItem("token");
-        try {
-            const response = await fetch(`${backend}/api/perfil/eliminarHorario/${id}/${dia}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                await fetchPerfil();
-            } else {
-                console.error("Error al eliminar horario");
-            }
-        } catch (err) {
-            console.error("Error de red al eliminar horario:", err);
-        }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const agregarHorario = async (e) => {
+    const handleActualizar = async (e) => {
         e.preventDefault();
         setMensajeError("");
-        const token = localStorage.getItem("token");
-
-        const dia = e.target.dia.value;
-        const horaInicio = e.target.horaInicio.value.slice(0, 5);
-        const horaFin = e.target.horaFin.value.slice(0, 5);
-
-        if (horaFin <= horaInicio) {
-            setMensajeError("La hora de fin debe ser mayor que la hora de inicio.");
-            return;
-        }
+        setMensajeExito("");
 
         try {
-            const response = await fetch(`${backend}/api/perfil/agregarHorario/${perfil.id}/${dia}/${horaInicio}/${horaFin}`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                await fetchPerfil();
-                e.target.reset();
-            } else {
-                const errorData = await response.json();
-                setMensajeError(errorData.message || "Error al agregar horario.");
-            }
-        } catch (err) {
-            console.error("Error de red al agregar horario:", err);
-            setMensajeError("Error de red al agregar horario.");
-        }
-    };
-
-    const confirmarEdicion = async () => {
-        const token = localStorage.getItem("token");
-        try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${backend}/api/perfil/actualizar`, {
                 method: "PUT",
                 headers: {
@@ -112,115 +64,166 @@ const MiPerfil = () => {
                 },
                 body: JSON.stringify({
                     id: perfil.id,
-                    localidad: formData.localidad,
-                    frecuenciaCitas: formData.frecuenciaCitas,
-                    costo: formData.costo
+                    ...formData
                 })
             });
-
             if (response.ok) {
-                setEditando(false);
                 await fetchPerfil();
+                setMensajeExito("Perfil actualizado correctamente.");
             } else {
-                const errorData = await response.json();
-                setMensajeError(errorData.message || "Error al guardar los cambios.");
+                const res = await response.json();
+                setMensajeError(res.message || "Error al actualizar");
             }
         } catch (err) {
-            console.error("Error al actualizar perfil:", err);
-            setMensajeError("Error al actualizar perfil.");
+            setMensajeError("Error de red al actualizar.");
         }
     };
 
-    const handleInputChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+    const eliminarHorario = async (id, dia) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${backend}/api/perfil/eliminarHorario/${id}/${dia}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                await fetchPerfil();
+            }
+        } catch (err) {
+            console.error("Error al eliminar horario");
+        }
+    };
+
+    const agregarHorario = async (e) => {
+        e.preventDefault();
+        setMensajeError("");
+        const dia = e.target.horarioDia.value;
+        const horaInicio = e.target.horaInicioHorario.value;
+        const horaFin = e.target.horaFinHorario.value;
+
+        if (horaFin <= horaInicio) {
+            setMensajeError("La hora de fin debe ser mayor que la hora de inicio.");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${backend}/api/perfil/agregarHorario/${perfil.id}/${dia}/${horaInicio}/${horaFin}`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                await fetchPerfil();
+                e.target.reset();
+            } else {
+                const res = await response.json();
+                setMensajeError(res.message || "Error al agregar horario");
+            }
+        } catch (err) {
+            setMensajeError("Error de red al agregar horario");
+        }
     };
 
     useEffect(() => {
         fetchPerfil();
     }, []);
 
-    if (loading) return <p className="loading-text">Cargando perfil...</p>;
-    if (error) return <p className="error-text">Error al cargar el perfil.</p>;
+    useEffect(() => {
+        if (mensajeExito) {
+            const timer = setTimeout(() => {
+                setMensajeExito("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [mensajeExito]);
+
+    useEffect(() => {
+        if (mensajeError) {
+            const timer = setTimeout(() => {
+                setMensajeError("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [mensajeError]);
+
+    if (loading) return <p className="miPerfilMod-centerMessage">Cargando perfil...</p>;
+    if (error || !perfil) return <p className="miPerfilMod-centerMessage miPerfilMod-centerMessage-error">Error al cargar perfil.</p>;
 
     return (
-        <section className="perfil-container">
-            <header className="perfil-header">
+        <div className="miPerfilMod-container">
+            <div className="miPerfilMod-card">
                 <img
-                    src={`http://localhost:8080/user/imagen/${perfil.id}`}
-                    alt="Foto del usuario"
-                    className="perfil-foto"
+                    src={`${backend}/user/imagen/${perfil.id}`}
+                    alt="Foto de perfil"
+                    className="miPerfilMod-photo"
                 />
-                <h1 className="perfil-nombre">{perfil.nombre}</h1>
-            </header>
+                <h2 className="miPerfilMod-nombre">{perfil.nombre}</h2>
 
-            {perfil.especialidad && (
-                <>
-                    <section className="datos-medico">
-                        <h2>Información del Médico</h2>
-                        <p><strong>Especialidad:</strong> {perfil.especialidad}</p>
+                {perfil.rol === 2 && (
+                    <>
+                        <form onSubmit={handleActualizar} className="miPerfilMod-form">
+                            <input type="hidden" name="id" value={perfil.id} />
 
-                        <p>
-                            <strong>Localidad:</strong>{" "}
-                            {editando ? (
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="especialidadMod">Especialidad:</label>
                                 <input
+                                    type="text"
+                                    id="especialidadMod"
+                                    name="especialidad"
+                                    value={formData.especialidad}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="costoMod">Costo:</label>
+                                <input
+                                    type="number"
+                                    id="costoMod"
+                                    name="costo"
+                                    value={formData.costo}
+                                    onChange={handleInputChange}
+                                    min="0"
+                                    required
+                                />
+                            </div>
+
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="localidadMod">Localidad:</label>
+                                <input
+                                    type="text"
+                                    id="localidadMod"
                                     name="localidad"
                                     value={formData.localidad}
                                     onChange={handleInputChange}
+                                    required
                                 />
-                            ) : (
-                                perfil.localidad
-                            )}
-                        </p>
+                            </div>
 
-                        <p>
-                            <strong>Frecuencia de Citas:</strong>{" "}
-                            {editando ? (
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="frecuenciaMod">Frecuencia:</label>
                                 <input
-                                    name="frecuenciaCitas"
                                     type="number"
-                                    min="1"
+                                    id="frecuenciaMod"
+                                    name="frecuenciaCitas"
                                     value={formData.frecuenciaCitas}
                                     onChange={handleInputChange}
+                                    min="1"
+                                    required
                                 />
-                            ) : (
-                                `Cada ${perfil.frecuenciaCitas} minutos`
-                            )}
-                        </p>
+                            </div>
 
-                        <p>
-                            <strong>Costo por Consulta:</strong>{" "}
-                            {editando ? (
-                                <input
-                                    name="costo"
-                                    type="number"
-                                    min="0"
-                                    value={formData.costo}
-                                    onChange={handleInputChange}
-                                />
-                            ) : (
-                                `₡${perfil.costo}`
-                            )}
-                        </p>
+                            <div className="miPerfilMod-btn-container">
+                                <button type="submit" className="miPerfilMod-btn">Actualizar</button>
+                            </div>
+                        </form>
 
-                        {!editando ? (
-                            <button onClick={() => setEditando(true)} className="btn-agregar">
-                                Editar
-                            </button>
-                        ) : (
-                            <button onClick={confirmarEdicion} className="btn-agregar">
-                                Confirmar
-                            </button>
-                        )}
+                        {mensajeExito && <div className="miPerfilMod-success-message"><p>{mensajeExito}</p></div>}
 
-                        {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
-                    </section>
-
-                    <section className="horarios-atencion">
-                        <h2>Horarios de Atención</h2>
-                        <table className="tabla-horarios">
+                        <h3 className="miPerfilMod-subtitle">Horarios de Atención</h3>
+                        <table className="miPerfilMod-table">
                             <thead>
                             <tr>
                                 <th>Día</th>
@@ -230,15 +233,15 @@ const MiPerfil = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {perfil.horarios.map((horario) => (
+                            {perfil.horarios.map(horario => (
                                 <tr key={horario.horarioId}>
                                     <td>{horario.dia}</td>
                                     <td>{horario.horaInicio}</td>
                                     <td>{horario.horaFin}</td>
                                     <td>
                                         <button
+                                            className="miPerfilMod-btn-delete"
                                             onClick={() => eliminarHorario(horario.horarioId, horario.dia)}
-                                            className="btn-eliminar"
                                         >
                                             Eliminar
                                         </button>
@@ -247,16 +250,14 @@ const MiPerfil = () => {
                             ))}
                             </tbody>
                         </table>
-                    </section>
 
-                    <section className="form-agregar-horario">
-                        <h2>Agregar Nuevo Horario</h2>
-                        <form onSubmit={agregarHorario} className="formulario-horario">
+                        <h3 className="miPerfilMod-subtitle">Agregar Nuevo Horario</h3>
+                        <form onSubmit={agregarHorario} className="miPerfilMod-form">
                             <input type="hidden" name="medicoId" value={perfil.id} />
 
-                            <div className="grupo-formulario">
-                                <label htmlFor="dia">Día:</label>
-                                <select id="dia" name="dia">
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="diaHorarioMod">Día:</label>
+                                <select id="diaHorarioMod" name="horarioDia">
                                     <option value="Lunes">Lunes</option>
                                     <option value="Martes">Martes</option>
                                     <option value="Miércoles">Miércoles</option>
@@ -267,28 +268,26 @@ const MiPerfil = () => {
                                 </select>
                             </div>
 
-                            <div className="grupo-formulario">
-                                <label htmlFor="horaInicio">Hora de Inicio:</label>
-                                <input type="time" id="horaInicio" name="horaInicio" required />
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="horaInicioHorarioMod">Hora Inicio:</label>
+                                <input type="time" id="horaInicioHorarioMod" name="horaInicioHorario" required />
                             </div>
 
-                            <div className="grupo-formulario">
-                                <label htmlFor="horaFin">Hora de Fin:</label>
-                                <input type="time" id="horaFin" name="horaFin" required />
+                            <div className="miPerfilMod-form-group">
+                                <label htmlFor="horaFinHorarioMod">Hora Fin:</label>
+                                <input type="time" id="horaFinHorarioMod" name="horaFinHorario" required />
                             </div>
 
-                            <div className="contenedor-boton">
-                                <button type="submit" className="btn-agregar">
-                                    Agregar Horario
-                                </button>
+                            <div className="miPerfilMod-btn-container">
+                                <button type="submit" className="miPerfilMod-btn">Actualizar</button>
                             </div>
-
-                            {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
                         </form>
-                    </section>
-                </>
-            )}
-        </section>
+
+                        {mensajeError && <div className="miPerfilMod-error-message"><p>{mensajeError}</p></div>}
+                    </>
+                )}
+            </div>
+        </div>
     );
 };
 

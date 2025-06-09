@@ -11,7 +11,7 @@ import MiPerfil from './pages/MiPerfil/miPerfil';
 import { useContext, useState, useRef, useEffect } from "react";
 import { AppContext } from "./AppProvider";
 import { AppProvider } from "./AppProvider";
-import { Link, BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Link, BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
     return (
@@ -34,7 +34,6 @@ function Header() {
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
 
-    // Cierra menú si clic fuera
     useEffect(() => {
         function handleClickOutside(event) {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -54,24 +53,28 @@ function Header() {
             <nav className="App-nav">
                 {!rol && (
                     <>
+                        <Link to="/about" className="App-link">About</Link>
                         <Link to="/home" className="App-link">Search</Link>
                         <Link to="/login" className="App-link">Login</Link>
                     </>
                 )}
                 {rol === 1 && (
                     <>
+                        <Link to="/about" className="App-link">About</Link>
                         <Link to="/historialPacientes" className="App-link">Historial</Link>
                         <Link to="/home" className="App-link">Search</Link>
                     </>
                 )}
                 {rol === 2 && (
                     <>
+                        <Link to="/about" className="App-link">About</Link>
                         <Link to="/historialMedicos" className="App-link">Citas</Link>
                         <Link to="/home" className="App-link">Search</Link>
                     </>
                 )}
                 {rol === 3 && (
                     <>
+                        <Link to="/about" className="App-link">About</Link>
                         <Link to="/GestionMedicos" className="App-link">Gestión</Link>
                         <Link to="/home" className="App-link">Search</Link>
                         <Link to="/logout" className="App-link">Logout</Link>
@@ -103,6 +106,7 @@ function Main() {
     return (
         <div className="App-Main">
             <Routes>
+                <Route path="/" element={<Navigate to="/about" replace />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/registro-medico/:id" element={<RegistroMedico />} />

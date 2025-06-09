@@ -14,7 +14,6 @@ function Home() {
     const [especialidad, setEspecialidad] = useState("");
     const [localidad, setLocalidad] = useState("");
 
-    // Nueva variable para guardar citas confirmadas
     const [confirmedAppointments, setConfirmedAppointments] = useState([]);
 
     const { user } = useContext(AppContext);
