@@ -128,7 +128,6 @@ public class controller {
                     .filter(m -> "Aprobado".equalsIgnoreCase(m.getStatus()))
                     .toList();
 
-            // Mapear a DTO
             List<MedicoDTO> medicosDTO = medicosAprobados.stream()
                     .map(m -> new MedicoDTO(
                             m.getId(),

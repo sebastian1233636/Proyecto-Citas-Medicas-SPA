@@ -194,10 +194,18 @@ function Home() {
                         <td className="button-container">
                             <button
                                 className="btn btn-primary"
-                                onClick={() => navigate(`/home/${medico.id}/schedule`)}
+                                onClick={() => {
+                                    const token = localStorage.getItem("token");
+                                    if (!token) {
+                                        navigate("/login");
+                                    } else {
+                                        navigate(`/home/${medico.id}/schedule`);
+                                    }
+                                }}
                             >
                                 Schedule
                             </button>
+
                         </td>
                     </tr>
                 ))}
@@ -209,10 +217,10 @@ function Home() {
                     <div className="modal">
                         <h2>Confirm Appointment</h2>
                         <p><strong>Doctor:</strong> {selectedDoctor.nombre}</p>
-                        <p><strong>Specialty:</strong> {selectedDoctor.especialidad}</p>
-                        <p><strong>City:</strong> {selectedDoctor.localidad}</p>
-                        <p><strong>Date:</strong> {new Date(selectedDate).toLocaleDateString("es-ES")}</p>
-                        <p><strong>Time:</strong> {selectedTime}</p>
+                        <p><strong>Especialidad:</strong> {selectedDoctor.especialidad}</p>
+                        <p><strong>Ciudad:</strong> {selectedDoctor.localidad}</p>
+                        <p><strong>Dia:</strong> {new Date(selectedDate).toLocaleDateString("es-ES")}</p>
+                        <p><strong>Hora:</strong> {selectedTime}</p>
                         <div className="modal-buttons">
                             <button
                                 className="btn btn-success"

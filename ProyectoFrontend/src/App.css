@@ -22,11 +22,17 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  color: #119dac;
+  font-weight: bold;
+  font-size: 22px;
 }
 
 .App-logo {
-  height: 5vmin;
+  height: 8vmin;
   pointer-events: none;
+  border-radius: 8px;
+  padding: 4px;
+  box-sizing: content-box;
 }
 
 .logo {
@@ -56,6 +62,7 @@
 .nav-links {
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 
 .App-link,
@@ -71,17 +78,17 @@
   text-decoration: underline;
 }
 
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 .profile-menu {
   position: relative;
   display: inline-block;
-  margin-left: 20px;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
 }
 
 .dropdown-menu {

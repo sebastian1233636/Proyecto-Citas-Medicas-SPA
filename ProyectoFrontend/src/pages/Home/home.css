@@ -53,7 +53,7 @@
 }
 
 .appointment-table {
-    width: 100%;
+    width: 90%;
     max-width: 1500px;
     margin: 0 auto;
     border-collapse: separate;
@@ -61,35 +61,41 @@
 }
 
 .appointment-row {
+    display: flex;
+    align-items: center;
     background-color: white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     border-radius: 10px;
+    padding: 15px 0;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .doctor-info {
+    width: 30%;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 15px;
-    width: 30%;
+    padding: 0 15px;
+}
+
+.availability {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    padding: 0 15px;
+    margin-left: 110px;
+}
+
+.button-container {
+    width: 20%;
+    text-align: center;
+    padding: 0 15px;
 }
 
 .doctor-details {
     display: flex;
     flex-direction: column;
-}
-
-.availability {
-    padding: 15px;
-    width: 40%;
-    vertical-align: middle;
-}
-
-.button-container {
-    padding: 15px;
-    width: 20%;
-    text-align: center;
-    vertical-align: middle;
 }
 
 .button-container button {
@@ -148,12 +154,12 @@
     margin-bottom: 5px;
 }
 
-.times a {
+.times {
     display: block;
     text-decoration: none;
 }
 
-.times a button {
+.times button {
     display: block;
     width: 100%;
     background: rgba(0, 122, 255, 0.1);
@@ -166,7 +172,7 @@
     cursor: pointer;
 }
 
-.times a button:hover {
+.times button:hover {
     background: #007aff;
     color: white;
     transition: 0.3s;
@@ -178,39 +184,72 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    backdrop-filter: blur(2px);
 }
 
 .modal {
-    background: white;
+    background: #ffffff;
     padding: 2rem;
-    border-radius: 10px;
-    max-width: 400px;
+    border-radius: 16px;
+    max-width: 420px;
     width: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease-in-out;
+}
+
+.modal h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #007aff;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.modal p {
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+    color: #333;
 }
 
 .modal-buttons {
     display: flex;
     justify-content: space-between;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
+    gap: 10px;
+}
+
+.btn-success,
+.btn-secondary {
+    flex: 1;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
 }
 
 .btn-success {
     background-color: #28a745;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    cursor: pointer;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #218838;
 }
 
 .btn-secondary {
     background-color: #6c757d;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    cursor: pointer;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
 }

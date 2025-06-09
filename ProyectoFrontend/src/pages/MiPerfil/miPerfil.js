@@ -97,12 +97,29 @@ const MiPerfil = () => {
     const agregarHorario = async (e) => {
         e.preventDefault();
         setMensajeError("");
+
         const dia = e.target.horarioDia.value;
         const horaInicio = e.target.horaInicioHorario.value;
         const horaFin = e.target.horaFinHorario.value;
-
+        
         if (horaFin <= horaInicio) {
             setMensajeError("La hora de fin debe ser mayor que la hora de inicio.");
+            console.log("Error: hora fin <= hora inicio");
+            return;
+        }
+
+        const normalizarHora = (horaStr) => {
+            return horaStr.slice(0, 5);
+        };
+
+        const existeHorario = perfil.horarios.some(horario =>
+            horario.dia === dia &&
+            normalizarHora(horario.horaInicio) === horaInicio &&
+            normalizarHora(horario.horaFin) === horaFin
+        );
+
+        if (existeHorario) {
+            setMensajeError("Este horario ya existe.");
             return;
         }
 
@@ -116,12 +133,15 @@ const MiPerfil = () => {
             if (response.ok) {
                 await fetchPerfil();
                 e.target.reset();
+                console.log("Horario agregado OK");
             } else {
                 const res = await response.json();
                 setMensajeError(res.message || "Error al agregar horario");
+                console.log("Error backend:", res.message);
             }
         } catch (err) {
             setMensajeError("Error de red al agregar horario");
+            console.error("Catch error red:", err);
         }
     };
 
@@ -160,7 +180,7 @@ const MiPerfil = () => {
                 />
                 <h2 className="miPerfilMod-nombre">{perfil.nombre}</h2>
 
-                {perfil.rol === 2 && (
+                {perfil.especialidad &&  (
                     <>
                         <form onSubmit={handleActualizar} className="miPerfilMod-form">
                             <input type="hidden" name="id" value={perfil.id} />
