@@ -34,7 +34,6 @@ export default function Registro() {
         e.preventDefault();
         setError("");
 
-        // Validar que las contraseñas coincidan
         if (formData.clave !== confirmClave) {
             setError("Las contraseñas no coinciden.");
             return;
@@ -63,7 +62,7 @@ export default function Registro() {
                 if (rolId === "2") {
                     navigate(`/registro-medico/${id}`);
                 } else {
-                    navigate("/login");
+                    navigate("/registroExitoso");
                 }
             } else {
                 const errorMsg = await response.text();

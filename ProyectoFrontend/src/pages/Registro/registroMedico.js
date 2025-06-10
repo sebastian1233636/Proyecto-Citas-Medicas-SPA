@@ -38,7 +38,7 @@ export default function RegistroMedico() {
             });
 
             if (response.ok) {
-                navigate("/login");
+                navigate("/registroExitoso");
             } else {
                 const message = await response.text();
                 setError("Error al registrar médico: " + message);

@@ -22,7 +22,6 @@ export default function Login() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: id, clave: clave }),
             });
-            console.log(id , clave);
             if (response.ok) {
                 const data = await response.json();
                 login(data.token);

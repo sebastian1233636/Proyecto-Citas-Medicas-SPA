@@ -20,7 +20,6 @@ const Historial = () => {
     const navigate = useNavigate();
     const backend = "http://localhost:8080";
 
-    // Verificar autenticación al montar el componente
     useEffect(() => {
         const token = localStorage.getItem("token");
 
@@ -29,14 +28,11 @@ const Historial = () => {
             return;
         }
 
-        // Si hay token y usuario, todo está bien
         if (authState.user) {
             setAuthLoading(false);
             return;
         }
 
-        // Si hay token pero no usuario, esperar más tiempo para que el contexto se cargue
-        // No redirigir automáticamente, dejar que el AppProvider maneje la validación
         const timeoutId = setTimeout(() => {
             setAuthLoading(false);
         }, 3000); // Aumentar a 3 segundos

@@ -124,6 +124,7 @@ public class Medico {
         }
     }
 
+
     public Map<LocalDate, List<String>> getFechas(int semanaOffset) {
         Map<LocalDate, List<String>> disponibilidad = new TreeMap<>();
         LocalDate fechaBase = LocalDate.now().plusWeeks(semanaOffset);
@@ -182,5 +183,4 @@ public class Medico {
         }
         return horariosGenerados;
     }
-
 }

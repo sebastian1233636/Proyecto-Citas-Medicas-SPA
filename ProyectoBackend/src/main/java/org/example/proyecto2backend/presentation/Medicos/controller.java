@@ -63,6 +63,38 @@ public class controller {
         }
     }
 
+    @GetMapping("/{id}/schedule")
+    public ResponseEntity<?> obtenerHorarioMedico(
+            @PathVariable String id,
+            @RequestParam(value = "semana", required = false, defaultValue = "0") int semana) {
+
+        try {
+            Medico medico = service.obtenerMedicoPorId(id);
+
+            if (medico == null || !"Aprobado".equalsIgnoreCase(medico.getStatus())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Médico no encontrado o no aprobado.");
+            }
+
+            Map<LocalDate, List<String>> fechas = medico.getFechas(semana);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", medico.getId());
+            response.put("nombre", medico.getUsuario().getNombre());
+            response.put("especialidad", medico.getEspecialidad());
+            response.put("costo", medico.getCosto());
+            response.put("localidad", medico.getLocalidad());
+            response.put("frecuenciaCitas", medico.getFrecuenciaCitas());
+            response.put("disponibilidad", fechas);
+            response.put("semana", semana);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener el horario del médico: " + e.getMessage());
+        }
+    }
 
     @GetMapping("/home")
     public ResponseEntity<Map<String, Object>> home(

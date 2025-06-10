@@ -3,8 +3,10 @@ import About from './pages/About/about';
 import Login from './pages/Login/login';
 import Logout from './pages/Login/logout';
 import Home from './pages/Home/home';
+import HorarioExtendido from './pages/Home/horarioExtendido';
 import Registro from './pages/Registro/registro';
 import RegistroMedico from './pages/Registro/registroMedico';
+import RegistroExitoso from './pages/Registro/registroExitoso';
 import GestionMedicos from "./pages/Gestion/gestion";
 import Historial from './pages/Citas/historial';
 import MiPerfil from './pages/MiPerfil/miPerfil';
@@ -110,9 +112,11 @@ function Main() {
                 <Route path="/about" element={<About />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/registro-medico/:id" element={<RegistroMedico />} />
+                <Route path="/registroExitoso" element={<RegistroExitoso />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/home/:id/schedule" element={<HorarioExtendido />} />
                 <Route path="/GestionMedicos" element={<GestionMedicos />} />
                 <Route path="/perfil" element={<MiPerfil />} />
                 <Route path="/historialPacientes" element={<Historial />} />
