@@ -14,24 +14,54 @@ const Historial = () => {
     const [notasCita, setNotasCita] = useState('');
     const [statusCita, setStatusCita] = useState('Completada');
     const [loading, setLoading] = useState(false);
+    const [authLoading, setAuthLoading] = useState(true);
 
     const { authState } = useContext(AppContext);
     const navigate = useNavigate();
     const backend = "http://localhost:8080";
 
+    // Verificar autenticación al montar el componente
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        // Si hay token y usuario, todo está bien
+        if (authState.user) {
+            setAuthLoading(false);
+            return;
+        }
+
+        // Si hay token pero no usuario, esperar más tiempo para que el contexto se cargue
+        // No redirigir automáticamente, dejar que el AppProvider maneje la validación
+        const timeoutId = setTimeout(() => {
+            setAuthLoading(false);
+        }, 3000); // Aumentar a 3 segundos
+
+        return () => clearTimeout(timeoutId);
+    }, [authState.user, navigate]);
+
     const esMedico = authState.user?.rol === 2;
     const userId = authState.user?.id;
 
     useEffect(() => {
-        if (userId) {
+        if (userId && !authLoading) {
             fetchCitas();
         }
-    }, [userId, filtros]);
+    }, [userId, filtros, authLoading]);
 
     const fetchCitas = async () => {
         try {
             setLoading(true);
             const token = localStorage.getItem("token");
+
+            if (!token) {
+                navigate('/login');
+                return;
+            }
 
             let url;
             const params = new URLSearchParams();
@@ -57,12 +87,9 @@ const Historial = () => {
             }
 
             const headers = {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             };
-
-            if (token) {
-                headers["Authorization"] = `Bearer ${token}`;
-            }
 
             const response = await fetch(url, {
                 method: "GET",
@@ -74,6 +101,10 @@ const Historial = () => {
                 setCitas(data);
             } else if (response.status === 404) {
                 setCitas([]);
+            } else if (response.status === 401) {
+                // Token expirado o inválido
+                localStorage.removeItem("token");
+                navigate('/login');
             } else {
                 throw new Error("Error al obtener las citas");
             }
@@ -110,6 +141,12 @@ const Historial = () => {
     const completarCita = async () => {
         try {
             const token = localStorage.getItem("token");
+
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
             const url = `${backend}/Historial/completar/${citaSeleccionada.id}`;
 
             const response = await fetch(url, {
@@ -128,6 +165,9 @@ const Historial = () => {
                 alert("Cita actualizada exitosamente");
                 setModalCompletarVisible(false);
                 fetchCitas();
+            } else if (response.status === 401) {
+                localStorage.removeItem("token");
+                navigate('/login');
             } else {
                 throw new Error("Error al actualizar la cita");
             }
@@ -158,6 +198,32 @@ const Historial = () => {
                 return 'status-default';
         }
     };
+
+    // Mostrar loading mientras se verifica la autenticación
+    if (authLoading) {
+        return (
+            <div className="historial-container">
+                <div className="loading">Loading user data...</div>
+            </div>
+        );
+    }
+
+    // Si no hay token, redirigir
+    const token = localStorage.getItem("token");
+    if (!token) {
+        navigate('/login');
+        return null;
+    }
+
+    // Si hay token pero no hay usuario, mostrar que está cargando
+    // (el AppProvider debería estar validando el token)
+    if (!authState.user) {
+        return (
+            <div className="historial-container">
+                <div className="loading">Validating session...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="historial-container">
@@ -193,6 +259,10 @@ const Historial = () => {
 
                 <button className="btn-search" onClick={() => fetchCitas()}>
                     Search
+                </button>
+
+                <button className="btn-clear" onClick={limpiarFiltros}>
+                    Clear Filters
                 </button>
             </div>
 
