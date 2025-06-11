@@ -9,5 +9,4 @@ public record MedicoDTO(
         BigDecimal costo,
         String localidad,
         Integer frecuenciaCitas
-) {
-}
+) { }

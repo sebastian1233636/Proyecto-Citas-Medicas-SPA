@@ -6,5 +6,4 @@ public record RegistroDTO(
         Long rolId,
         String nombre
 
-) {
-}
+) { }

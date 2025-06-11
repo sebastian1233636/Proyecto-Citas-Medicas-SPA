@@ -27,7 +27,7 @@
 
 .input-label {
     background: #e0e0e0;
-    padding: 12px 15px;
+    padding: 14px 15px;
     font-size: 14px;
     color: black;
     white-space: nowrap;
@@ -108,12 +108,19 @@
     cursor: pointer;
 }
 
-.doctor-info img {
+.appointment-row .doctor-info .user-avatar {
     width: 80px;
     height: 90px;
+}
+
+.appointment-row .doctor-info .avatar-fallback {
+    width: 80px;
+    height: 90px;
+    background-color: #555;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
     border-radius: 50%;
-    margin-right: 10px;
-    object-fit: cover;
 }
 
 .name-price {

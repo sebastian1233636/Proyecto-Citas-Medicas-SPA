@@ -1,30 +1,28 @@
 package org.example.proyecto2backend.presentation.Login;
 
-import lombok.AllArgsConstructor;
-import org.example.proyecto2backend.Security.TokenService;
-import org.example.proyecto2backend.data.RolRepository;
-import org.example.proyecto2backend.data.UsuarioRepository;
-import org.example.proyecto2backend.logic.DTOs.LoginDTO;
-import org.example.proyecto2backend.logic.DTOs.LoginResponse;
-import org.example.proyecto2backend.logic.DTOs.RegistroDTO;
-import org.example.proyecto2backend.logic.Rol;
-import org.example.proyecto2backend.logic.Usuario;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.example.proyecto2backend.logic.DTOs.LoginResponse;
+import org.example.proyecto2backend.data.UsuarioRepository;
+import org.example.proyecto2backend.Security.TokenService;
+import org.example.proyecto2backend.logic.DTOs.LoginDTO;
+import org.springframework.security.core.Authentication;
+import org.example.proyecto2backend.data.RolRepository;
+import org.springframework.web.multipart.MultipartFile;
+import org.example.proyecto2backend.logic.Usuario;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.example.proyecto2backend.logic.Rol;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
+import lombok.AllArgsConstructor;
+import java.nio.file.Paths;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController("loginController")
 @AllArgsConstructor
@@ -40,11 +38,8 @@ public class controller {
     private final RolRepository rolRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @RequestParam("id") String id,
-            @RequestParam("clave") String clave,
-            @RequestParam("nombre") String nombre,
-            @RequestParam("rolId") String rolId,
+    public ResponseEntity<?> register( @RequestParam("id") String id, @RequestParam("clave") String clave,
+            @RequestParam("nombre") String nombre, @RequestParam("rolId") String rolId,
             @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
 
         try {
@@ -88,7 +83,6 @@ public class controller {
         }
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
         try {
@@ -119,5 +113,4 @@ public class controller {
 
         return ResponseEntity.notFound().build();
     }
-
 }

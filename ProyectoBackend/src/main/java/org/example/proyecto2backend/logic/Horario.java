@@ -1,10 +1,9 @@
 package org.example.proyecto2backend.logic;
 
-import jakarta.persistence.*;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
+import jakarta.persistence.*;
 import java.time.LocalTime;
 
 @Entity
@@ -37,41 +36,32 @@ public class Horario {
     public Integer getId() {
         return id;
     }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Medico getMedico() {
         return medico;
     }
-
-    public void setMedico(Medico medico) {
-        this.medico = medico;
-    }
-
     public String getDia() {
         return dia;
     }
-
-    public void setDia(String dia) {
-        this.dia = dia;
-    }
-
     public LocalTime getHoraInicio() {
         return horaInicio;
     }
-
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
-    }
-
     public LocalTime getHoraFin() {
         return horaFin;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public void setMedico(Medico medico) {
+        this.medico = medico;
+    }
+    public void setDia(String dia) {
+        this.dia = dia;
+    }
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
     public void setHoraFin(LocalTime horaFin) {
         this.horaFin = horaFin;
     }
-
 }

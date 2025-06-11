@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AppContext } from '../../AppProvider';
 import { useNavigate } from "react-router-dom";
 import './historial.css';
@@ -35,7 +35,7 @@ const Historial = () => {
 
         const timeoutId = setTimeout(() => {
             setAuthLoading(false);
-        }, 3000); // Aumentar a 3 segundos
+        }, 3000);
 
         return () => clearTimeout(timeoutId);
     }, [authState.user, navigate]);
@@ -43,13 +43,8 @@ const Historial = () => {
     const esMedico = authState.user?.rol === 2;
     const userId = authState.user?.id;
 
-    useEffect(() => {
-        if (userId && !authLoading) {
-            fetchCitas();
-        }
-    }, [userId, filtros, authLoading]);
 
-    const fetchCitas = async () => {
+    const fetchCitas = useCallback(async () => {
         try {
             setLoading(true);
             const token = localStorage.getItem("token");
@@ -98,7 +93,6 @@ const Historial = () => {
             } else if (response.status === 404) {
                 setCitas([]);
             } else if (response.status === 401) {
-                // Token expirado o inválido
                 localStorage.removeItem("token");
                 navigate('/login');
             } else {
@@ -111,7 +105,13 @@ const Historial = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId, filtros, navigate, esMedico]);
+
+    useEffect(() => {
+        if (userId && !authLoading) {
+            fetchCitas();
+        }
+    }, [userId, filtros, authLoading, fetchCitas]);
 
     const handleFiltroChange = (campo, valor) => {
         setFiltros(prev => ({
@@ -195,7 +195,6 @@ const Historial = () => {
         }
     };
 
-    // Mostrar loading mientras se verifica la autenticación
     if (authLoading) {
         return (
             <div className="historial-container">
@@ -204,52 +203,49 @@ const Historial = () => {
         );
     }
 
-    // Si no hay token, redirigir
     const token = localStorage.getItem("token");
     if (!token) {
         navigate('/login');
         return null;
     }
 
-    // Si hay token pero no hay usuario, mostrar que está cargando
-    // (el AppProvider debería estar validando el token)
     if (!authState.user) {
         return (
             <div className="historial-container">
-                <div className="loading">Validating session...</div>
+                <div className="loading">Validando Sesión...</div>
             </div>
         );
     }
 
     return (
         <div className="historial-container">
-            <h2>{esMedico ? 'Doctor' : 'Patient'} - <span className="patient-name">{authState.user.name || 'Usuario'}</span> - {esMedico ? 'appointments' : 'appointment history'}</h2>
+            <h2>{esMedico ? 'Doctor' : 'Paciente'} - <span className="patient-name">{authState.user.name || 'Usuario'}</span> - {esMedico ? 'Citas' : 'Historial de c'}</h2>
 
             <div className="filtros-container">
                 <div className="filtro-grupo">
-                    <label htmlFor="status">Status:</label>
+                    <label htmlFor="status">Estatus:</label>
                     <select
                         id="status"
                         value={filtros.status}
                         onChange={(e) => handleFiltroChange('status', e.target.value)}
                     >
                         <option value="">All</option>
-                        <option value="Pendiente">Pending</option>
-                        <option value="Completada">Completed</option>
-                        <option value="Cancelada">Cancelled</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
                     </select>
                 </div>
 
                 <div className="filtro-grupo">
                     <label htmlFor="nombre">
-                        {esMedico ? 'Patient:' : 'Doctor:'}
+                        {esMedico ? 'Paciente:' : 'Doctor:'}
                     </label>
                     <input
                         type="text"
                         id="nombre"
                         value={filtros.nombre}
                         onChange={(e) => handleFiltroChange('nombre', e.target.value)}
-                        placeholder={esMedico ? 'Search patient...' : 'Search doctor...'}
+                        placeholder={esMedico ? 'Buscar paciente...' : 'Buscar doctor...'}
                     />
                 </div>
 
@@ -262,12 +258,11 @@ const Historial = () => {
                 </button>
             </div>
 
-            {/* Lista de Citas */}
             {loading ? (
-                <div className="loading">Loading appointments...</div>
+                <div className="loading">Cargando citas...</div>
             ) : citas.length === 0 ? (
                 <div className="no-citas">
-                    No appointments found with the specified criteria.
+                    No se encontraron citas con los criterios especificados.
                 </div>
             ) : (
                 <div className="citas-lista">
@@ -285,7 +280,7 @@ const Historial = () => {
                                         {esMedico ? cita.nombrePaciente : cita.nombreMedico}
                                     </div>
                                     <div className="doctor-specialty">
-                                        {esMedico ? 'Patient' : 'Doctor'}
+                                        {esMedico ? 'Paciente' : 'Doctor'}
                                     </div>
                                     {cita.notas && (
                                         <div className="appointment-location">
@@ -306,9 +301,9 @@ const Historial = () => {
                                 </div>
                                 <div className="status-actions">
                                     <span className={`status-badge ${getStatusClass(cita.status)}`}>
-                                        {cita.status === 'Pendiente' ? 'Pending' :
-                                            cita.status === 'Completada' ? 'Completed' :
-                                                cita.status === 'Cancelada' ? 'Cancelled' :
+                                        {cita.status === 'Pendiente' ? 'Pendiente' :
+                                            cita.status === 'Completada' ? 'Completado' :
+                                                cita.status === 'Cancelada' ? 'Cancelado' :
                                                     cita.status}
                                     </span>
                                     {esMedico && (
@@ -346,41 +341,40 @@ const Historial = () => {
                 </div>
             )}
 
-            {/* Modal para completar/editar cita (solo médicos) */}
             {modalCompletarVisible && citaSeleccionada && (
                 <div className="modal-overlay">
                     <div className="modal">
                         <h3>
-                            {citaSeleccionada.status === 'Pendiente' ? 'Complete Appointment' : 'Edit Appointment'}
+                            {citaSeleccionada.status === 'Pendiente' ? 'Completar cita' : 'Editar cita'}
                         </h3>
 
                         <div className="modal-info">
-                            <p><strong>{esMedico ? 'Patient:' : 'Doctor:'}</strong> {esMedico ? citaSeleccionada.nombrePaciente : citaSeleccionada.nombreMedico}</p>
-                            <p><strong>Date:</strong> {formatearFecha(citaSeleccionada.fecha)}</p>
-                            <p><strong>Time:</strong> {citaSeleccionada.hora}</p>
+                            <p><strong>{esMedico ? 'Paciente:' : 'Doctor:'}</strong> {esMedico ? citaSeleccionada.nombrePaciente : citaSeleccionada.nombreMedico}</p>
+                            <p><strong>Dia:</strong> {formatearFecha(citaSeleccionada.fecha)}</p>
+                            <p><strong>Hora:</strong> {citaSeleccionada.hora}</p>
                         </div>
 
                         <div className="modal-form">
                             <div className="form-grupo">
-                                <label htmlFor="statusModal">Status:</label>
+                                <label htmlFor="statusModal">Estatus:</label>
                                 <select
                                     id="statusModal"
                                     value={statusCita}
                                     onChange={(e) => setStatusCita(e.target.value)}
                                 >
-                                    <option value="Completada">Completed</option>
-                                    <option value="Cancelada">Cancelled</option>
-                                    <option value="Pendiente">Pending</option>
+                                    <option value="Completada">Completado</option>
+                                    <option value="Cancelada">Cancelado</option>
+                                    <option value="Pendiente">Pendiente</option>
                                 </select>
                             </div>
 
                             <div className="form-grupo">
-                                <label htmlFor="notasModal">Notes:</label>
+                                <label htmlFor="notasModal">Notas:</label>
                                 <textarea
                                     id="notasModal"
                                     value={notasCita}
                                     onChange={(e) => setNotasCita(e.target.value)}
-                                    placeholder="Add notes about the consultation..."
+                                    placeholder="Agrega notas acerca de la consulta..."
                                     rows="4"
                                 />
                             </div>

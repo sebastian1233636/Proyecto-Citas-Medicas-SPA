@@ -1,13 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AppContext } from '../../AppProvider';
-import { useNavigate } from "react-router-dom";
+import AvatarConFallback from "../MiPerfil/AvatarConFallback";
+import React, { useState, useEffect } from "react";
 import './gestion.css';
 
 const GestionMedicos = () => {
     const [medicos, setMedicos] = useState([]);
-    const { authState } = useContext(AppContext);
-    const navigate = useNavigate();
-
     const fetchMedicos = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -93,10 +89,10 @@ const GestionMedicos = () => {
                     .map(medico => (
                         <tr key={medico.id} className="medicos-row">
                             <td>
-                                <img
+                                <AvatarConFallback
                                     src={`http://localhost:8080/user/imagen/${medico.id}`}
-                                    alt="Medico"
-                                    className="picture rounded-circle"
+                                    fallbackText={medico.nombre || 'U'}
+                                    className="user-avatar"
                                 />
                             </td>
                             <td>{medico.nombre}</td>

@@ -5,5 +5,4 @@ public record HorarioDTO(
         String dia,
         java.time.LocalTime horaInicio,
         java.time.LocalTime horaFin
-) {}
-
+) { }

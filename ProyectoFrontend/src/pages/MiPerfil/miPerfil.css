@@ -30,8 +30,11 @@
     border: 1px solid #d9534f;
 }
 
-
 .miPerfilMod-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background: white;
     border-radius: 10px;
     padding: 20px;
@@ -40,13 +43,25 @@
     text-align: center;
 }
 
-.miPerfilMod-photo {
+
+.appointment-row .doctor-info .user-avatar {
     width: 120px;
     height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #007bff;
+    text-align: center;
+    align-items: center;
 }
+
+.miPerfilMod-container .miPerfilMod-card .avatar-fallback {
+    width: 120px;
+    height: 120px;
+    background-color: #555;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+}
+
 
 .miPerfilMod-nombre {
     color: black;

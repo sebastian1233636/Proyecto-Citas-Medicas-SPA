@@ -1,19 +1,20 @@
 package org.example.proyecto2backend.presentation.Medicos;
 
-import lombok.AllArgsConstructor;
-import org.example.proyecto2backend.data.MedicoRepository;
-import org.example.proyecto2backend.data.UsuarioRepository;
-import org.example.proyecto2backend.logic.DTOs.MedicoDTO;
-import org.example.proyecto2backend.logic.DTOs.MedicoDTOGestion;
+import org.example.proyecto2backend.Security.UserInfo;
 import org.example.proyecto2backend.logic.DTOs.MedicoResponseDTO;
-import org.example.proyecto2backend.logic.Medico;
+import org.example.proyecto2backend.logic.DTOs.MedicoDTOGestion;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.example.proyecto2backend.data.UsuarioRepository;
+import org.example.proyecto2backend.data.MedicoRepository;
+import org.example.proyecto2backend.logic.DTOs.MedicoDTO;
 import org.example.proyecto2backend.logic.Usuario;
 import org.example.proyecto2backend.logic.service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import org.example.proyecto2backend.logic.Medico;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,6 @@ public class controller {
     MedicoRepository medicoRepository;
     @Autowired
     service service;
-
 
     @PostMapping("/register/{id}")
     public ResponseEntity<?> register(@PathVariable String id, @RequestBody MedicoDTO dto) {
@@ -97,10 +97,7 @@ public class controller {
     }
 
     @GetMapping("/home")
-    public ResponseEntity<Map<String, Object>> home(
-            @RequestParam(value = "semana", required = false, defaultValue = "0") int semana,
-            @RequestParam(value = "error", required = false) String error) {
-
+    public ResponseEntity<Map<String, Object>> home(@RequestParam(value = "semana", required = false, defaultValue = "0") int semana, @RequestParam(value = "error", required = false) String error) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -187,7 +184,6 @@ public class controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
 
     @GetMapping("/gestion")
     public ResponseEntity<?> showMedicos() {

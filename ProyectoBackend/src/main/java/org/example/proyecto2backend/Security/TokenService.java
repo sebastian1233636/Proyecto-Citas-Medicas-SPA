@@ -21,11 +21,10 @@ import java.util.Date;
 public class TokenService {
     private final JwtConfig jwtConfig;
     public String generateToken(Authentication authentication) {
-        // header + payload/claims + signature
         var header = new JWSHeader.Builder(jwtConfig.getAlgorithm()).type(JOSEObjectType.JWT).build();
         Instant now = Instant.now();
         var builder = new JWTClaimsSet.Builder().issuer("TotalSoft").issueTime(Date.from(now))
-                .expirationTime(Date.from(now.plus(1, java.time.temporal.ChronoUnit.HOURS)));
+                .expirationTime(Date.from(now.plusMillis(jwtConfig.getJwtExpiration())));
         var scopes = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         builder.claim("scope", scopes);
         var user = (Usuario) authentication.getPrincipal();

@@ -1,12 +1,11 @@
 package org.example.proyecto2backend.logic;
 
-import jakarta.persistence.*;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.ColumnDefault;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -56,74 +55,55 @@ public class Medico {
     public Set<Horario> getHorarios() {
         return horarios;
     }
-
     public String getId() {
         return id;
     }
-    public void setHorarios(Set<Horario> horarios) {
-        this.horarios = horarios;
-    }
-
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
     public String getEspecialidad() {
         return especialidad;
     }
-
-    public void setEspecialidad(String especialidad) {
-        this.especialidad = especialidad;
-    }
-
     public BigDecimal getCosto() {
         return costo;
     }
-
-    public void setCosto(BigDecimal costo) {
-        this.costo = costo;
-    }
-
     public String getLocalidad() {
         return localidad;
     }
-
-    public void setLocalidad(String localidad) {
-        this.localidad = localidad;
-    }
-
-    public Integer getFrecuenciaCitas() {
-        return frecuenciaCitas;
-    }
-
-    public void setFrecuenciaCitas(Integer frecuenciaCitas) {
-        this.frecuenciaCitas = frecuenciaCitas;
-    }
-
+    public Integer getFrecuenciaCitas() { return frecuenciaCitas; }
     public String getStatus() {
         return status;
     }
 
+    public void setHorarios(Set<Horario> horarios) {
+        this.horarios = horarios;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
+    }
+    public void setCosto(BigDecimal costo) {
+        this.costo = costo;
+    }
+    public void setLocalidad(String localidad) {
+        this.localidad = localidad;
+    }
+    public void setFrecuenciaCitas(Integer frecuenciaCitas) {
+        this.frecuenciaCitas = frecuenciaCitas;
+    }
     public void setStatus(String status) {
         this.status = status;
     }
 
     @PrePersist
     public void setDefaultStatus() {
-        if (this.status == null) {
-            this.status = "Pendiente";
-        }
+        if (this.status == null) { this.status = "Pendiente"; }
     }
-
 
     public Map<LocalDate, List<String>> getFechas(int semanaOffset) {
         Map<LocalDate, List<String>> disponibilidad = new TreeMap<>();
@@ -132,21 +112,6 @@ public class Medico {
         for (Horario horario : horarios) {
             DayOfWeek diaSemana = convertirDiaSemana(horario.getDia());
             LocalDate proximaFecha = obtenerProximaFecha(fechaBase, diaSemana);
-            List<String> horariosGenerados = generarHorarios(horario);
-            disponibilidad.put(proximaFecha, horariosGenerados);
-        }
-        return disponibilidad;
-    }
-
-
-    public Map<LocalDate, List<String>> nextWeek() {
-        Map<LocalDate, List<String>> disponibilidad = new TreeMap<>();
-        LocalDate fechaActual = LocalDate.now().plusWeeks(1);
-
-        for (Horario horario : horarios) {
-            DayOfWeek diaSemana = convertirDiaSemana(horario.getDia());
-            LocalDate proximaFecha = obtenerProximaFecha(fechaActual, diaSemana);
-
             List<String> horariosGenerados = generarHorarios(horario);
             disponibilidad.put(proximaFecha, horariosGenerados);
         }

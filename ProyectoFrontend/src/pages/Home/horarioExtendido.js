@@ -1,9 +1,10 @@
+import AvatarConFallback from "../MiPerfil/AvatarConFallback";
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './home.css';
 
 function HorarioExtendido() {
-    const { id } = useParams();  // id del médico
+    const { id } = useParams();
     const backend = "http://localhost:8080";
 
     const [medico, setMedico] = useState(null);
@@ -13,15 +14,12 @@ function HorarioExtendido() {
     const [showModal, setShowModal] = useState(false);
     const [semanaOffset, setSemanaOffset] = useState(0);
     const [confirmedAppointments, setConfirmedAppointments] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
 
         const fetchData = async () => {
-            setLoading(true);
             try {
-                // 1. Traer disponibilidad
                 const disponibilidadRes = await fetch(`${backend}/Medico/${id}/schedule?semana=${semanaOffset}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -41,7 +39,6 @@ function HorarioExtendido() {
                     costo: data.costo
                 });
 
-                // 2. Traer todas las citas (sin filtro desde backend)
                 const citasRes = await fetch(`${backend}/Historial/medico/${id}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -52,7 +49,6 @@ function HorarioExtendido() {
                 if (!citasRes.ok) throw new Error("Error al cargar citas");
                 const citas = await citasRes.json();
 
-                // 3. Filtrar citas que corresponden a la semana actual (según semanaOffset)
                 const startOfWeek = new Date();
                 startOfWeek.setDate(startOfWeek.getDate() + semanaOffset * 7);
                 startOfWeek.setHours(0, 0, 0, 0);
@@ -73,8 +69,6 @@ function HorarioExtendido() {
                 setConfirmedAppointments(citasMapeadas);
             } catch (err) {
                 console.error(err);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -129,6 +123,11 @@ function HorarioExtendido() {
                     </td>
 
                     <td className="doctor-info">
+                        <AvatarConFallback
+                            src={`http://localhost:8080/user/imagen/${id}`}
+                            fallbackText={medico?.nombre || 'U'}
+                            className="user-avatar"
+                        />
                         <div className="doctor-details">
                             <div className="name-price">
                                 <strong>{medico?.nombre}</strong>

@@ -1,8 +1,8 @@
 package org.example.proyecto2backend.logic;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "rol")
@@ -20,17 +20,14 @@ public class Rol {
     public Integer getId() {
         return id;
     }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getNombre() {
         return nombre;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
 }

@@ -1,5 +1,6 @@
-import "./miPerfil.css";
 import React, { useEffect, useState } from "react";
+import "./miPerfil.css";
+import AvatarConFallback from "./AvatarConFallback";
 
 const backend = "http://localhost:8080";
 
@@ -104,7 +105,6 @@ const MiPerfil = () => {
         
         if (horaFin <= horaInicio) {
             setMensajeError("La hora de fin debe ser mayor que la hora de inicio.");
-            console.log("Error: hora fin <= hora inicio");
             return;
         }
 
@@ -133,7 +133,6 @@ const MiPerfil = () => {
             if (response.ok) {
                 await fetchPerfil();
                 e.target.reset();
-                console.log("Horario agregado OK");
             } else {
                 const res = await response.json();
                 setMensajeError(res.message || "Error al agregar horario");
@@ -173,9 +172,9 @@ const MiPerfil = () => {
     return (
         <div className="miPerfilMod-container">
             <div className="miPerfilMod-card">
-                <img
-                    src={`${backend}/user/imagen/${perfil.id}`}
-                    alt="Foto de perfil"
+                <AvatarConFallback
+                    src={`http://localhost:8080/user/imagen/${perfil.id}`}
+                    fallbackText={perfil?.nombre || 'U'}
                     className="miPerfilMod-photo"
                 />
                 <h2 className="miPerfilMod-nombre">{perfil.nombre}</h2>

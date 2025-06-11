@@ -1,33 +1,29 @@
 package org.example.proyecto2backend.presentation.citas;
 
-import lombok.AllArgsConstructor;
-import org.example.proyecto2backend.logic.Cita;
-import org.example.proyecto2backend.logic.Medico;
+import org.example.proyecto2backend.Security.UserInfo;
 import org.example.proyecto2backend.logic.Usuario;
 import org.example.proyecto2backend.logic.service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.example.proyecto2backend.logic.Medico;
 import org.springframework.web.bind.annotation.*;
+import org.example.proyecto2backend.logic.Cita;
+import java.time.format.DateTimeParseException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import java.time.format.DateTimeFormatter;
+import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 @RestController("citasController")
 @AllArgsConstructor
 @RequestMapping("/citas")
 public class controller {
-    @Autowired
-    service service;
+
+    private final service service;
 
     @PostMapping("/appointment/confirm")
-    public ResponseEntity<?> agendarCita(@RequestParam("did") String medicoId,
-                                         @RequestParam("ddt") String fechaHora,
-                                         @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<?> agendarCita(@RequestParam("did") String medicoId, @RequestParam("ddt") String fechaHora) {
         try {
             Medico medico = service.obtenerMedicoPorId(medicoId);
             if (medico == null) {
@@ -35,9 +31,12 @@ public class controller {
                         .body(Map.of("error", "Médico no encontrado"));
             }
 
-            String usuarioId = jwt.getClaimAsString("id");
-            Usuario usuario = service.findUsuarioById(usuarioId); // método que recupera desde DB
-
+            String usuarioId = UserInfo.getUsuarioId();
+            if (usuarioId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Usuario no autenticado"));
+            }
+            Usuario usuario = service.findUsuarioById(usuarioId);
             if (usuario == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "Usuario no válido"));

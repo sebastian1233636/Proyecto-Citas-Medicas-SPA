@@ -1,6 +1,6 @@
-import { useEffect, useContext } from "react";
 import { AppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useContext } from "react";
 
 export default function Logout() {
     const { setAuthState } = useContext(AppContext);

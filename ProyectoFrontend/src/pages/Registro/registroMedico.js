@@ -1,6 +1,6 @@
-import './registroMedico.css';
-import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import './registroMedico.css';
 
 export default function RegistroMedico() {
     const { id } = useParams();

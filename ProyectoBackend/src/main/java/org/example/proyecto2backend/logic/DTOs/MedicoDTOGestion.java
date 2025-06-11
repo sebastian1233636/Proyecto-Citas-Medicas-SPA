@@ -10,5 +10,4 @@ public record MedicoDTOGestion(
         String localidad,
         Integer frecuenciaCitas,
         String status
-) {
-}
+) { }

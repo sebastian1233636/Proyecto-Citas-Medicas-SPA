@@ -1,6 +1,6 @@
-import './registro.css';
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import './registro.css';
 
 export default function Registro() {
     const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function Registro() {
         imagen: null
     });
 
-    const [confirmClave, setConfirmClave] = useState(""); // Nuevo estado para confirmar la contraseña
+    const [confirmClave, setConfirmClave] = useState("");
     const [error, setError] = useState("");
 
     const backend = "http://localhost:8080";

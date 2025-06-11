@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AppContext } from '../../AppProvider';
+import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import './home.css';
+import AvatarConFallback from "../MiPerfil/AvatarConFallback";
 
 function Home() {
     const backend = "http://localhost:8080";
@@ -101,10 +101,10 @@ function Home() {
                 {medicos.map((medico, index) => (
                     <tr key={index} className="appointment-row">
                         <td className="doctor-info">
-                            <img
-                                src={`${backend}/user/imagen/${medico.id}`}
-                                alt="Medico"
-                                className="picture"
+                            <AvatarConFallback
+                                src={`http://localhost:8080/user/imagen/${medico.id}`}
+                                fallbackText={medico.nombre || 'U'}
+                                className="user-avatar"
                             />
                             <div className="doctor-details">
                                 <div className="name-price">

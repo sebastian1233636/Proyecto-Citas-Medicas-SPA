@@ -1,8 +1,6 @@
 package org.example.proyecto2backend.logic.DTOs;
 
-// CitaResponseDTO.java
 import org.example.proyecto2backend.logic.Cita;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 

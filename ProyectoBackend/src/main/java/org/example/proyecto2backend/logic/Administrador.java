@@ -1,9 +1,9 @@
 package org.example.proyecto2backend.logic;
 
-import jakarta.persistence.*;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "administrador")
@@ -22,17 +22,14 @@ public class Administrador {
     public String getId() {
         return id;
     }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
 }

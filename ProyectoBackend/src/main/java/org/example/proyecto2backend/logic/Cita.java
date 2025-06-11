@@ -1,11 +1,10 @@
 package org.example.proyecto2backend.logic;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
+import org.hibernate.annotations.ColumnDefault;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.OnDelete;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -49,57 +48,44 @@ public class Cita {
     public Integer getId() {
         return id;
     }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Medico getMedico() {
         return medico;
     }
-
-    public void setMedico(Medico medico) {
-        this.medico = medico;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
     public LocalDate getFecha() {
         return fecha;
     }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
     public LocalTime getHora() {
         return hora;
     }
-
-    public void setHora(LocalTime hora) {
-        this.hora = hora;
-    }
-
     public String getStatus() {
         return status;
     }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getNotas() {
         return notas;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public void setMedico(Medico medico) {
+        this.medico = medico;
+    }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+    public void setHora(LocalTime hora) {
+        this.hora = hora;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
     public void setNotas(String notas) {
         this.notas = notas;
     }
-
 }

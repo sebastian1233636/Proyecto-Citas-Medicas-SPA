@@ -1,5 +1,5 @@
 package org.example.proyecto2backend.logic.DTOs;
-// CitaDTO.java
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -11,4 +11,4 @@ public record CitaDTO(
         String nombrePaciente,
         String nombreMedico,
         String notas
-) {}
+) { }

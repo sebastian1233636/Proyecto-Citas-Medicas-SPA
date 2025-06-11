@@ -1,11 +1,10 @@
 package org.example.proyecto2backend.logic;
 
-import jakarta.persistence.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
+import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,48 +31,32 @@ public class Usuario implements UserDetails {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Column(name = "imagen")
-    private byte[] imagen;
-
     public String getId() {
         return id;
+    }
+    public String getClave() {
+        return clave;
+    }
+    public Rol getRol() {
+        return rol;
+    }
+    public String getNombre() {
+        return nombre;
     }
 
     public void setId(String id) {
         this.id = id;
     }
-
-    public String getClave() {
-        return clave;
-    }
-
     public void setClave(String clave) {
         this.clave = clave;
     }
-
-    public Rol getRol() {
-        return rol;
-    }
-
     public void setRol(Rol rol) {
         this.rol = rol;
     }
-
-    public String getNombre() {
-        return nombre;
-    }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public byte[] getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(byte[] imagen) {
-        this.imagen = imagen;
-    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
@@ -108,7 +91,4 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
-
-
-
 }

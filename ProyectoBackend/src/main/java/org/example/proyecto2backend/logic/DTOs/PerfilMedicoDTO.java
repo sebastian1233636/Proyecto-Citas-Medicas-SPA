@@ -11,5 +11,4 @@ public record PerfilMedicoDTO(
         String localidad,
         Integer frecuenciaCitas,
         List<HorarioDTO> horarios
-) {
-}
+) { }

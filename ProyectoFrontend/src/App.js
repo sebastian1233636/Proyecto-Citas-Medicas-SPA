@@ -1,19 +1,20 @@
-import './App.css';
+import { Link, BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useContext, useState, useRef, useEffect } from "react";
+import AvatarConFallback from './pages/MiPerfil/AvatarConFallback';
+import RegistroExitoso from './pages/Registro/registroExitoso';
+import RegistroMedico from './pages/Registro/registroMedico';
+import HorarioExtendido from './pages/Home/horarioExtendido';
+import GestionMedicos from "./pages/Gestion/gestion";
+import MiPerfil from './pages/MiPerfil/miPerfil';
+import Registro from './pages/Registro/registro';
+import Historial from './pages/Citas/historial';
+import { AppProvider } from "./AppProvider";
+import { AppContext } from "./AppProvider";
+import Logout from './pages/Login/logout';
 import About from './pages/About/about';
 import Login from './pages/Login/login';
-import Logout from './pages/Login/logout';
 import Home from './pages/Home/home';
-import HorarioExtendido from './pages/Home/horarioExtendido';
-import Registro from './pages/Registro/registro';
-import RegistroMedico from './pages/Registro/registroMedico';
-import RegistroExitoso from './pages/Registro/registroExitoso';
-import GestionMedicos from "./pages/Gestion/gestion";
-import Historial from './pages/Citas/historial';
-import MiPerfil from './pages/MiPerfil/miPerfil';
-import { useContext, useState, useRef, useEffect } from "react";
-import { AppContext } from "./AppProvider";
-import { AppProvider } from "./AppProvider";
-import { Link, BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css';
 
 function App() {
     return (
@@ -85,9 +86,9 @@ function Header() {
 
                 {(rol === 1 || rol === 2) && (
                     <div className="profile-menu" ref={menuRef}>
-                        <img
+                        <AvatarConFallback
                             src={`http://localhost:8080/user/imagen/${userId}`}
-                            alt="avatar"
+                            fallbackText={authState.user?.name || 'U'}
                             className="user-avatar"
                             onClick={() => setShowMenu(!showMenu)}
                         />

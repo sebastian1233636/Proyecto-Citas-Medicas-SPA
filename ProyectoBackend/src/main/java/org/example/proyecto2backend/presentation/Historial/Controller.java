@@ -1,47 +1,25 @@
 package org.example.proyecto2backend.presentation.Historial;
 
-import lombok.AllArgsConstructor;
-import org.example.proyecto2backend.data.CitaRepository;
-import org.example.proyecto2backend.data.MedicoRepository;
-import org.example.proyecto2backend.data.UsuarioRepository;
-import org.example.proyecto2backend.logic.DTOs.CitaDTO;
 import org.example.proyecto2backend.logic.DTOs.CitaCompletarDTO;
 import org.example.proyecto2backend.logic.DTOs.CitaResponseDTO;
-import org.example.proyecto2backend.logic.Cita;
-import org.example.proyecto2backend.logic.Medico;
-import org.example.proyecto2backend.logic.Usuario;
+import org.example.proyecto2backend.logic.DTOs.CitaDTO;
 import org.example.proyecto2backend.logic.service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.example.proyecto2backend.logic.Cita;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
 import java.util.List;
 
 @RestController("historialController")
 @AllArgsConstructor
 @RequestMapping("/Historial")
 public class Controller {
-
-    @Autowired
-    private final CitaRepository citaRepository;
-    @Autowired
-    private final UsuarioRepository usuarioRepository;
-    @Autowired
-    private final MedicoRepository medicoRepository;
-    @Autowired
     private final service service;
 
     @GetMapping("/medico/{medicoId}")
-    public ResponseEntity<?> obtenerCitasMedico(
-            @PathVariable String medicoId,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String nombrePaciente) {
-
+    public ResponseEntity<?> obtenerCitasMedico(@PathVariable String medicoId, @RequestParam(required = false) String status, @RequestParam(required = false) String nombrePaciente) {
         try {
-            Medico medico = medicoRepository.findById(medicoId)
-                    .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
-
             List<Cita> citas = service.obtenerCitasMedico(medicoId, status, nombrePaciente);
 
             if (citas.isEmpty()) {
@@ -55,8 +33,8 @@ public class Controller {
                             c.getFecha(),
                             c.getHora(),
                             c.getStatus(),
-                            c.getUsuario().getNombre(), // Nombre del paciente
-                            c.getMedico().getUsuario().getNombre(), // Nombre del médico
+                            c.getUsuario().getNombre(),
+                            c.getMedico().getUsuario().getNombre(),
                             c.getNotas()
                     ))
                     .toList();
@@ -70,15 +48,8 @@ public class Controller {
     }
 
     @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<?> obtenerCitasPaciente(
-            @PathVariable String pacienteId,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String nombreMedico) {
-
+    public ResponseEntity<?> obtenerCitasPaciente(@PathVariable String pacienteId, @RequestParam(required = false) String status, @RequestParam(required = false) String nombreMedico) {
         try {
-            Usuario usuario = usuarioRepository.findById(pacienteId)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
             List<Cita> citas = service.obtenerCitasPaciente(pacienteId, status, nombreMedico);
 
             if (citas.isEmpty()) {
@@ -92,8 +63,8 @@ public class Controller {
                             c.getFecha(),
                             c.getHora(),
                             c.getStatus(),
-                            c.getUsuario().getNombre(), // Nombre del paciente
-                            c.getMedico().getUsuario().getNombre(), // Nombre del médico
+                            c.getUsuario().getNombre(),
+                            c.getMedico().getUsuario().getNombre(),
                             c.getNotas()
                     ))
                     .toList();
@@ -107,10 +78,7 @@ public class Controller {
     }
 
     @PutMapping("/completar/{citaId}")
-    public ResponseEntity<?> completarCita(
-            @PathVariable Integer citaId,
-            @RequestBody CitaCompletarDTO dto) {
-
+    public ResponseEntity<?> completarCita(@PathVariable Integer citaId, @RequestBody CitaCompletarDTO dto) {
         try {
             Cita cita = service.obtenerCitaPorId(citaId);
 

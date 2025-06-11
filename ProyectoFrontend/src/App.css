@@ -78,12 +78,27 @@
   text-decoration: underline;
 }
 
-.user-avatar {
-  width: 45px;
-  height: 45px;
+.avatar-fallback {
+  width: 40px;
+  height: 40px;
+  background-color: #555;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
+  user-select: none;
   cursor: pointer;
-  vertical-align: middle;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
 }
 
 .profile-menu {

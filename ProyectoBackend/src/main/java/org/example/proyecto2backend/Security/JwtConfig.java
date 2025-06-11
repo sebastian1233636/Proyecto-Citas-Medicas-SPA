@@ -1,10 +1,10 @@
 package org.example.proyecto2backend.Security;
 
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.beans.factory.annotation.Value;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.JWSAlgorithm;
 import javax.crypto.SecretKey;
 
 @Configuration
@@ -13,6 +13,7 @@ public class JwtConfig {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
+    @Getter
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
